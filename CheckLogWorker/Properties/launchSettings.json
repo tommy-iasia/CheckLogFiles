@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CheckLogWorker": {
+      "commandName": "Project",
+      "commandLineArgs": "Program.json HarddiskRemain.json"
+    }
+  }
+}

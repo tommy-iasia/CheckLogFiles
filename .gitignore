@@ -1,0 +1,8 @@
+/CheckLogServer/Data
+/CheckLogServer/bin
+/CheckLogServer/obj
+/CheckLogServer/*.user
+/CheckLogWorker/obj
+/CheckLogWorker/bin
+/.vs
+/CheckLogServer/wwwroot/lib

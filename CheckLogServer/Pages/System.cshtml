@@ -1,0 +1,39 @@
+﻿@page
+@model SystemModel
+
+@inject Login login
+@{
+    ViewData["Title"] = "System";
+}
+
+<h1>System</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Time</td>
+            <td>@DateTime.Now.ToString("yyyy-MM-dd")</td>
+        </tr>
+
+        <tr>
+            <td>Path</td>
+            <td>@System.IO.Path.GetFullPath(".")</td>
+        </tr>
+
+        <tr>
+            <td>Account</td>
+            <td>@(login?.Account.Username ?? "(anonymous)")</td>
+        </tr>
+
+        <tr>
+            <td>Session</td>
+            <td>@(login.Session ?? "(no session)")</td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,27 @@
+﻿@model (string page, int index, int total)
+
+@if (Model.total > 0)
+{
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            @if (Model.index > 0)
+            {
+                <li class="page-item"><a class="page-link" asp-page="@Model.page" asp-route-pageIndex="@(Model.index - 1)">Previous</a></li>
+            }
+
+            @{
+                var fromIndex = Math.Max(Model.index - 2, 0);
+                var toIndex = Math.Min(Model.index + 8, Model.total);
+            }
+            @for (var pageIndex = fromIndex; pageIndex < toIndex; pageIndex++)
+            {
+                <li class="page-item @(pageIndex == Model.index ? "active" : string.Empty)"><a class="page-link" asp-page="@Model.page" asp-route-pageIndex="@pageIndex">@(pageIndex + 1)</a></li>
+            }
+
+            @if (Model.index < Model.total - 1)
+            {
+                <li class="page-item"><a class="page-link" asp-page="@Model.page" asp-route-pageIndex="@(Model.index + 1)">Next</a></li>
+            }
+        </ul>
+    </nav>
+}

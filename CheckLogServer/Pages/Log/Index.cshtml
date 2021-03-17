@@ -1,0 +1,70 @@
+﻿@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Logs";
+}
+
+<h1>Logs</h1>
+
+<h4>
+    @Model.AllRows.Length logs
+
+    @if (Model.AllRows.Any())
+    {
+        @:from @Model.AllRows.Min(t => t.Time).ToString("yyyy-MM-dd")
+        @:to @Model.AllRows.Max(t => t.Time).ToString("yyyy-MM-dd")
+    }
+</h4>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.AllRows[0].Time)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllRows[0].Level)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllRows[0].Name.Identifier)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllRows[0].Name.Runner)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in Model.PageRows)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(_ => row.Time)
+            </td>
+            <td>
+                @Html.DisplayFor(_ => row.Level)
+            </td>
+            <td>
+                @Html.DisplayFor(_ => row.Name.Identifier)
+            </td>
+            <td>
+                @Html.DisplayFor(_ => row.Name.Runner)
+            </td>
+
+            <td>
+                @if (row.Deleted)
+                {
+                    @:Deleted
+                }
+                else
+                {
+                    <a asp-page="./Details" asp-route-name="@row.Name.ToString()">View</a>
+                }
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<partial name="_PagniationPartial" model="@(("/Log/Index", Model.Pagination.index, Model.Pagination.total))" />

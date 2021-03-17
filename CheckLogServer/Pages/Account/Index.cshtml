@@ -1,0 +1,34 @@
+﻿@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Accounts";
+}
+
+<h1>Accounts</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Accounts[0].Username)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Accounts[0].Sessions)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Accounts)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(_ => item.Username)
+                </td>
+                <td>
+                    @(item.Sessions?.Length ?? 0)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
