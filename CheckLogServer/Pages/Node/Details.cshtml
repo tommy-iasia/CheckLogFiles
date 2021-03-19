@@ -1,0 +1,73 @@
+﻿@page
+@model DetailsModel
+
+@using CheckLogWorker
+@{
+    ViewData["Title"] = "Node";
+}
+
+<h1>@Model.Node.Identitifer</h1>
+
+<table class="table">
+    <tbody>
+        <tr>
+            <td>@nameof(Model.Node.Identitifer)</td>
+            <td>@Model.Node.Identitifer</td>
+        </tr>
+
+        <tr>
+            <td>@nameof(Model.Node.LevelLog.Level)</td>
+            <td>
+                @{ var level = Model.Node.LevelLog?.Level ?? LogLevel.Unknown; }
+                @if (level >= LogLevel.Warn)
+                {
+                    @level
+
+                    <form asp-page="./Resolve" asp-route-id="@Model.Node.Id" method="post">
+                        @switch (level)
+                        {
+                            case LogLevel.Warn:<button class="btn btn-warning">Resolve</button> break;
+                            case LogLevel.Error: <button class="btn btn-danger">Resolve</button>break;
+                        }
+                    </form>
+                }
+                else
+                {
+                    @:Normal
+                }
+            </td>
+        </tr>
+
+        <tr>
+            <td>@nameof(Model.Node.LevelTime)</td>
+            <td>@Model.Node.LevelTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+        </tr>
+
+        @if (Model.Node.Disabled)
+        {
+            <tr>
+                <td>@nameof(Model.Node.Disabled)</td>
+                <td>@Model.Node.Disabled</td>
+            </tr>
+        }
+
+        @if (Model.Lines?.Any() ?? false)
+        {
+            <tr>
+                <td>@nameof(Model.Node.LevelLog)</td>
+                <td class="log-content">
+                    <partial name="../Log/LogContent" model="Model.Lines" />
+                </td>
+            </tr>
+        }
+
+        <tr>
+            <td>@nameof(Model.Node.LogTime)</td>
+            <td>@Model.Node.LogTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+        </tr>
+    </tbody>
+</table>
+
+@section Scripts {
+    <link rel="stylesheet/less" type="text/css" href="~/css/log-content.less" />
+}

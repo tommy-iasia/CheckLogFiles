@@ -1,0 +1,46 @@
+﻿@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Updates";
+}
+
+<h1>Updates</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Updates[0].Version)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Updates[0].Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Updates[0].StartTime)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Updates)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(_ => item.Version)
+            </td>
+            <td>
+                @Html.DisplayFor(_ => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(_ => item.StartTime)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.Pagination.total > 0)
+{
+    <partial name="_PagniationPartial" model="@(("/Log/Index", Model.Pagination.index, Model.Pagination.total))" />
+}

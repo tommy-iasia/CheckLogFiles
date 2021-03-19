@@ -1,0 +1,25 @@
+﻿@page
+@model CheckLogServer.Pages.Node.MapModel
+
+@{
+    ViewData["Title"] = "Nodes";
+}
+<h1>Nodes</h1>
+<a asp-page="./List">List View</a>
+
+<div class="map">
+    <template>
+        <div class="node">
+            <a class="title">Title</a>
+        </div>
+    </template>
+</div>
+
+@section Scripts {
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet/less" type="text/css" href="~/css/node-map.less" />
+
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/node-map.js" defer></script>
+}

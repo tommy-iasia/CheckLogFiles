@@ -11,23 +11,20 @@ namespace CheckLogServer.Pages.Account
 {
     public class LogoutModel : PageModel
     {
-        public LogoutModel(AccountsSaver accountsSaver, Login login)
+        public LogoutModel(DatabaseContext database, Login login)
         {
-            this.accountsSaver = accountsSaver;
+            this.database = database;
             this.login = login;
         }
-        private readonly AccountsSaver accountsSaver;
+        private readonly DatabaseContext database;
         private readonly Login login;
 
         public async Task<IActionResult> OnGetAsync()
         {
             if (login.Success)
             {
-                login.Account.Sessions = login.Account.Sessions
-                   .Except(new[] { login.Session })
-                   .ToArray();
-
-                await accountsSaver.SaveAsync();
+                database.AccountSessions.Remove(login.Session);
+                await database.SaveChangesAsync();
             }
 
             return RedirectToPage("/Index");

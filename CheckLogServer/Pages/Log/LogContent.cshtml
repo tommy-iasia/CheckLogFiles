@@ -1,0 +1,10 @@
+﻿@model IEnumerable<CheckLogWorker.LogLine>
+
+@foreach (var line in Model)
+{
+    <div class="line @line.Level.ToString().ToLower()">
+        <div class="time">@line.Time.ToString("yy-MM-dd HH:mm:ss")</div>
+        <div class="level">@line.Level</div>
+        <div class="text">@line.Text</div>
+    </div>
+}

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace CheckLogWorker
+namespace CheckLogWorker.Runners
 {
     public static class HarddiskSpaceRecordExtensions
     {

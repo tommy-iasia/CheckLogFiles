@@ -1,33 +1,29 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CheckLogServer.Filter;
 using CheckLogServer.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CheckLogServer.Pages.Log
 {
-    [LoginRequired]
     public class IndexModel : PageModel
     {
-        public IndexModel(LogRowSaver logRowSaver) => this.logRowSaver = logRowSaver;
-        private readonly LogRowSaver logRowSaver;
+        public IndexModel(DatabaseContext database) => this.database = database;
+        private readonly DatabaseContext database;
 
-        public LogRow[] AllRows { get; private set; }
-
-        public IEnumerable<LogRow> PageRows { get; private set; }
+        public List<LogRow> Rows { get; private set; }
         public (int index, int total) Pagination { get; private set; }
 
         public async Task OnGetAsync(int pageIndex = 0)
         {
-            AllRows = await logRowSaver.LoadAsync();
+            var count = await database.LogRows.CountAsync();
 
-            const int pageSize = 50;
-            PageRows = AllRows.Skip(pageIndex * pageSize).Take(pageSize);
+            const int pageSize = 100;
+            Rows = await database.LogRows.Skip(pageIndex * pageSize).Take(pageSize).ToListAsync();
 
-            var totalPage = (int)Math.Ceiling((double)AllRows.Length / pageSize);
+            var totalPage = (int)Math.Ceiling((double)count / pageSize);
             Pagination = (pageIndex, totalPage);
         }
     }

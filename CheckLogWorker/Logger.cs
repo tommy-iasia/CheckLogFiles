@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -10,6 +11,9 @@ namespace CheckLogWorker
         public Logger(string fileName) => FileName = fileName;
         public readonly string FileName;
 
+        public IEnumerable<LogLine> Lines => lines;
+        private readonly List<LogLine> lines = new();
+
         private async Task WriteAsync(LogLevel level, string text)
         {
             var line = new LogLine
@@ -18,6 +22,7 @@ namespace CheckLogWorker
                 Level = level,
                 Text = text
             };
+            lines.Add(line);
             
             Console.WriteLine(line);
 

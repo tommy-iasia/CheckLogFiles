@@ -5,7 +5,8 @@ namespace CheckLogServer.Models
 {
     public class LogRow
     {
-        public LogName Name { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
 
         public DateTime Time { get; set; }
         public LogLevel Level { get; set; }

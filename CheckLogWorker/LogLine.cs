@@ -8,6 +8,7 @@ namespace CheckLogWorker
         public LogLevel Level { get; set; }
         public string Text { get; set; }
 
+
         public override string ToString() => $"[{Time:yyMMdd HH:mm:ss}][{Level}] {Text}";
     }
 }

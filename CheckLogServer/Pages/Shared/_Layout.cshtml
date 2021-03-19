@@ -27,10 +27,13 @@
                         @if (login.Success)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-page="/Log/Index">Log</a>
+                                <a class="nav-link text-dark" asp-page="/Node/Map">Nodes</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-page="/Account/Index">Account</a>
+                                <a class="nav-link text-dark" asp-page="/Log/Index">Logs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Account/Index">Accounts</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-page="/System">System</a>
@@ -55,12 +58,13 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - CheckLogServer - <a asp-page="/Privacy">Privacy</a>
+            &copy; 2021 - iAsia Online Systems Limited - <a asp-page="/Privacy">Privacy</a>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/less@3.13" defer></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)

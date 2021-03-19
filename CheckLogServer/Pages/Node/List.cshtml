@@ -1,0 +1,63 @@
+﻿@page
+@model ListModel
+
+@{
+    ViewData["Title"] = "Nodes";
+}
+<h1>Nodes</h1>
+<a asp-page="./Map">Map View</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nodes[0].Identitifer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nodes[0].LevelLog.Level)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nodes[0].LevelTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nodes[0].LogTime)
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var ordered = Model.Nodes
+                .OrderByDescending(t => t.LevelLog?.Level ?? CheckLogWorker.LogLevel.Unknown)
+                .ThenBy(t => t.Identitifer);
+        }
+        @foreach (var row in ordered)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(_ => row.Identitifer)
+                </td>
+                <td>
+                    @(row.LevelLog?.Level.ToString() ?? "Normal")
+                </td>
+                <td>
+                    @Html.DisplayFor(_ => row.LevelTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(_ => row.LogTime)
+                </td>
+                <td>
+                    @if (row.Disabled)
+                    {
+                        @:Disabled
+                    }
+                </td>
+                <td>
+                    <a asp-page="./Details" asp-route-id="@row.Id">View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

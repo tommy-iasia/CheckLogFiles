@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace CheckLogWorker
+namespace CheckLogWorker.Runners
 {
     public class HarddiskSpaceRecord
     {

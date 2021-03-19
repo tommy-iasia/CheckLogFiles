@@ -28,12 +28,12 @@
 
         <tr>
             <td>Account</td>
-            <td>@(login?.Account.Username ?? "(anonymous)")</td>
+            <td>@(login.Account?.Username ?? "(anonymous)")</td>
         </tr>
 
         <tr>
             <td>Session</td>
-            <td>@(login.Session ?? "(no session)")</td>
+            <td>@(login.Session?.Code ?? "(no session)")</td>
         </tr>
     </tbody>
 </table>

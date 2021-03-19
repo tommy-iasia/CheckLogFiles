@@ -1,7 +1,48 @@
 ﻿@page
 @model DetailsModel
 
-@foreach (var line in Model.Lines)
-{
-    <div>@line</div>
+@{
+    ViewData["Title"] = "Log";
+}
+
+<h4>@Model.Row.Name</h4>
+
+<table class="table">
+    <tbody>
+        <tr>
+            <td>@nameof(Model.Row.Name)</td>
+            <td>@Model.Row.Name</td>
+        </tr>
+
+        <tr>
+            <td>@nameof(Model.Row.Level)</td>
+            <td class="@(Model.Row.Level >= CheckLogWorker.LogLevel.Error ? "red": string.Empty)">
+            @Model.Row.Level
+            </td>
+        </tr>
+
+        @if (Model.Lines?.Any() ?? false)
+        {
+            <tr>
+                <td>Content</td>
+                <td class="log-content">
+                    <partial name="LogContent" model="Model.Lines"/>
+                </td>
+            </tr>
+        }
+
+        <tr>
+            <td>@nameof(Model.Row.Time)</td>
+            <td>@Model.Row.Time.ToString("yyyy-MM-dd")</td>
+        </tr>
+
+        <tr>
+            <td>@nameof(Model.Row.FileName)</td>
+            <td>@Model.Row.FileName</td>
+        </tr>
+    </tbody>
+</table>
+
+@section Scripts {
+    <link rel="stylesheet/less" type="text/css" href="~/css/log-content.less" />
 }

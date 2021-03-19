@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -18,29 +19,43 @@ namespace CheckLogServer.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var session = context.Request.Cookies[SessionKey];
-            if (session != null)
+            var code = context.Request.Cookies[SessionKey];
+            if (code != null)
             {
-                var login = context.RequestServices.GetRequiredService<Login>();
-                login.Session = session;
+                var database = context.RequestServices.GetRequiredService<DatabaseContext>();
+                var session = await database.AccountSessions
+                    .Where(t => t.Code == code)
+                    .Include(t => t.Account)
+                    .FirstOrDefaultAsync();
 
-                var accountsSaver = context.RequestServices.GetRequiredService<AccountsSaver>();
-                var accounts = await accountsSaver.LoadAsync();
-
-                login.Account = accounts?.FirstOrDefault(t => t.Sessions?.Contains(session) ?? false);
+                if (session != null)
+                {
+                    var login = context.RequestServices.GetRequiredService<Login>();
+                    login.Session = session;
+                    login.Account = session.Account;
+                }
             }
 
-            next?.Invoke(context);
+            await next?.Invoke(context);
         }
 
         private const string SessionKey = "Session";
-        public static string AddSession(HttpResponse response)
+        public static AccountSession AddSession(Account account, DatabaseContext database, HttpResponse response)
         {
-            var guid = Guid.NewGuid().ToString();
+            var code = Guid.NewGuid().ToString();
 
-            response.Cookies.Append(SessionKey, guid);
+            var accountSession = new AccountSession
+            {
+                Account = account,
+                Code = code,
+                StartTime = DateTime.Now
+            };
 
-            return guid;
+            database.AccountSessions.Add(accountSession);
+
+            response.Cookies.Append(SessionKey, code);
+
+            return accountSession;
         }
     }
 }

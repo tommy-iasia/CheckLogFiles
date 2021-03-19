@@ -4,67 +4,52 @@
 @{
     ViewData["Title"] = "Logs";
 }
-
 <h1>Logs</h1>
 
-<h4>
-    @Model.AllRows.Length logs
-
-    @if (Model.AllRows.Any())
-    {
-        @:from @Model.AllRows.Min(t => t.Time).ToString("yyyy-MM-dd")
-        @:to @Model.AllRows.Max(t => t.Time).ToString("yyyy-MM-dd")
-    }
-</h4>
+@if (Model.Pagination.total > 0)
+{
+    <partial name="_PagniationPartial" model="@(("/Log/Index", Model.Pagination.index, Model.Pagination.total))" />
+}
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.AllRows[0].Time)
+                @Html.DisplayNameFor(model => model.Rows[0].Level)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AllRows[0].Level)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AllRows[0].Name.Identifier)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AllRows[0].Name.Runner)
+                @Html.DisplayNameFor(model => model.Rows[0].Name)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var row in Model.PageRows)
+        @foreach (var row in Model.Rows)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(_ => row.Time)
-            </td>
-            <td>
-                @Html.DisplayFor(_ => row.Level)
-            </td>
-            <td>
-                @Html.DisplayFor(_ => row.Name.Identifier)
-            </td>
-            <td>
-                @Html.DisplayFor(_ => row.Name.Runner)
-            </td>
+            <tr class="@(row.Level >= CheckLogWorker.LogLevel.Error ? "red" : string.Empty)">
+                <td>
+                    @Html.DisplayFor(_ => row.Level)
+                </td>
+                <td>
+                    @Html.DisplayFor(_ => row.Name)
+                </td>
 
-            <td>
-                @if (row.Deleted)
-                {
-                    @:Deleted
-                }
-                else
-                {
-                    <a asp-page="./Details" asp-route-name="@row.Name.ToString()">View</a>
-                }
-            </td>
-        </tr>
+                <td>
+                    @if (row.Deleted)
+                    {
+                        @:Deleted
+                    }
+                    else
+                    {
+                        <a asp-page="./Details" asp-route-id="@row.Id">View</a>
+                    }
+                </td>
+            </tr>
         }
     </tbody>
 </table>
 
-<partial name="_PagniationPartial" model="@(("/Log/Index", Model.Pagination.index, Model.Pagination.total))" />
+@if (Model.Pagination.total > 0)
+{
+    <partial name="_PagniationPartial" model="@(("/Log/Index", Model.Pagination.index, Model.Pagination.total))" />
+}

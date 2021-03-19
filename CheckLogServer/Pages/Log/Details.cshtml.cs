@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CheckLogServer.Models;
 using CheckLogWorker;
@@ -11,22 +8,15 @@ namespace CheckLogServer.Pages.Log
 {
     public class DetailsModel : PageModel
     {
-        public DetailsModel(LogRowSaver logRowSaver) => this.logRowSaver = logRowSaver;
-        private readonly LogRowSaver logRowSaver;
+        public DetailsModel(DatabaseContext database) => this.database = database;
+        private readonly DatabaseContext database;
 
         public LogRow Row { get; private set; }
         public LogLine[] Lines { get; private set; }
 
-        public async Task<IActionResult> OnGetAsync(string name)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return BadRequest();
-            }
-
-            var rows = await logRowSaver.LoadAsync();
-            Row = rows.FirstOrDefault(t => t.Name.ToString() == name);
-
+            Row = await database.LogRows.FindAsync(id);
             if (Row == null)
             {
                 return NotFound();

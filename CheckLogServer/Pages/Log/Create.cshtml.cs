@@ -1,19 +1,27 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CheckLogServer.Hubs;
 using CheckLogServer.Models;
 using CheckLogWorker;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CheckLogServer.Pages.Log
 {
     [IgnoreAntiforgeryToken]
     public class CreateModel : PageModel
     {
-        public CreateModel(LogRowSaver logRowSaver) => this.logRowSaver = logRowSaver;
-        private readonly LogRowSaver logRowSaver;
+        public CreateModel(DatabaseContext database, IHubContext<NodeHub> nodeHub)
+        {
+            this.database = database;
+            this.nodeHub = nodeHub;
+        }
+        private readonly DatabaseContext database;
+        private readonly IHubContext<NodeHub> nodeHub;
 
         [FromBody]
         public LogSubmit Submit { get; set; }
@@ -25,8 +33,8 @@ namespace CheckLogServer.Pages.Log
                 return BadRequest();
             }
 
-            var oldRows = await logRowSaver.LoadAsync();
-            if (oldRows.Any(t => t.Name == Submit.Name))
+            var name = Submit.Name.ToString();
+            if (await database.LogRows.AnyAsync(t => t.Name == name))
             {
                 return NotFound();
             }
@@ -34,7 +42,7 @@ namespace CheckLogServer.Pages.Log
             var directory = @"Data\Log";
             Directory.CreateDirectory(directory);
 
-            var fileName = Path.Combine(directory, $"{Submit.Name}.json");
+            var fileName = Path.Combine(directory, $"{name}.json");
             await System.IO.File.WriteAllTextAsync(fileName, Submit.Text);
 
             var lines = Logger.Read(Submit.Text);
@@ -42,15 +50,44 @@ namespace CheckLogServer.Pages.Log
 
             var row = new LogRow
             {
-                Name = Submit.Name,
+                Name = name,
                 Time = Submit.Time,
                 Level = level,
                 FileName = fileName,
                 Deleted = false
             };
+            database.LogRows.Add(row);
 
-            var newRows = new[] { row }.Concat(oldRows).ToArray();
-            await logRowSaver.SaveAsync(newRows);
+            var node = await database.Nodes
+                .Where(t => t.Identitifer == Submit.Name.Identifier)
+                .Include(t => t.LevelLog)
+                .FirstOrDefaultAsync();
+
+            if (node == null)
+            {
+                node = new Models.Node
+                {
+                    Identitifer = Submit.Name.Identifier,
+                    Disabled = false
+                };
+                database.Nodes.Add(node);
+            }
+
+            node.LogTime = DateTime.Now;
+
+            if (level > LogLevel.Info)
+            {
+                if (!node.Disabled
+                    && level >= (node.LevelLog?.Level ?? LogLevel.Unknown))
+                {
+                    node.LevelLog = row;
+                    node.LevelTime = node.LogTime;
+                }
+            }
+
+            await database.SaveChangesAsync();
+
+            var _ = nodeHub.NodeAsync(node);
 
             return Content($"{row.Name} created");
         }

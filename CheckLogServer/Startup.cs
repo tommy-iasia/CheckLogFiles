@@ -1,3 +1,4 @@
+using CheckLogServer.Hubs;
 using CheckLogServer.Middlewares;
 using CheckLogServer.Models;
 using Microsoft.AspNetCore.Builder;
@@ -26,12 +27,13 @@ namespace CheckLogServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<AccountsSaver>();
-            services.AddScoped<LogRowSaver>();
+            services.AddDbContext<DatabaseContext>();
 
             services.AddScoped<Login>();
 
-            services.AddRazorPages();
+            services.AddRazorPages().AddRazorRuntimeCompilation();
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,8 +50,14 @@ namespace CheckLogServer
                 app.UseHsts();
             }
 
+            DatabaseContext.Initialize(app);
+
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ServeUnknownFileTypes = true
+            });
 
             app.UseMiddleware<LoginMiddleware>();
 
@@ -60,6 +68,8 @@ namespace CheckLogServer
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+
+                endpoints.MapHub<NodeHub>("/nodeHub");
             });
         }
     }

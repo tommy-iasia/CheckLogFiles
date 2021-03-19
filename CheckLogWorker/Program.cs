@@ -1,4 +1,4 @@
-﻿using AsyncEnumerable;
+﻿using CheckLogWorker.Runners;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,8 +14,10 @@ namespace CheckLogWorker
     public class Program
     {
         public string Identifier { get; set; }
-        public string Server { get; set; }
         public string Runner { get; set; }
+
+        public string Server { get; set; }
+        public bool SkipSendInfo { get; set; }
 
         static async Task Main(string[] args)
         {
@@ -50,10 +52,23 @@ namespace CheckLogWorker
 
             IRunner runner = program.Runner switch
             {
-                nameof(HarddiskRemain) => JsonSerializer.Deserialize<HarddiskRemain>(json),
-                nameof(HarddiskGrowth) => JsonSerializer.Deserialize<HarddiskGrowth>(json),
+                nameof(HarddiskRemainLow) => JsonSerializer.Deserialize<HarddiskRemainLow>(json),
+                nameof(HarddiskOverGrowth) => JsonSerializer.Deserialize<HarddiskOverGrowth>(json),
+                nameof(KpiQueueRunner) => JsonSerializer.Deserialize<KpiQueueRunner>(json),
+                nameof(LargeRetransmissionRequestRunner) => JsonSerializer.Deserialize<LargeRetransmissionRequestRunner>(json),
+                nameof(NetWarnOverflowRunner) => JsonSerializer.Deserialize<NetWarnOverflowRunner>(json),
+                nameof(NetErrorOverflowRunner) => JsonSerializer.Deserialize<NetErrorOverflowRunner>(json),
+                nameof(OversizeDailyDirectoryRunner) => JsonSerializer.Deserialize<OversizeDailyDirectoryRunner>(json),
+                nameof(RetransmissionRejectedRunner) => JsonSerializer.Deserialize<RetransmissionRejectedRunner>(json),
                 _ => throw new InvalidOperationException()
             };
+
+            await logger.InfoAsync("Prepare");
+            
+            if (!await runner.PrepareAsync(logger))
+            {
+                await logger.ErrorAsync("Failed at prepare stage");
+            }
 
             await logger.InfoAsync("Start");
 
@@ -66,8 +81,16 @@ namespace CheckLogWorker
                 await logger.ErrorAsync(e);
             }
 
-            await logger.InfoAsync("Send");
-            await SendAsync(logName, program.Server, logger);
+            if (logger.Lines.Any(t => t.Level > LogLevel.Info)
+                || !program.SkipSendInfo)
+            {
+                await logger.InfoAsync("Send");
+                await SendAsync(logName, program.Server, logger);
+            }
+            else
+            {
+                await logger.InfoAsync("Only info is logged, skip sending");
+            }
 
             await logger.InfoAsync("End");
         }

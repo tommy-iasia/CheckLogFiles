@@ -6,3 +6,5 @@
 /CheckLogWorker/bin
 /.vs
 /CheckLogServer/wwwroot/lib
+/CheckLogUpdater/obj
+/CheckLogUpdater/bin

@@ -1,21 +1,21 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CheckLogServer.Middlewares;
 using CheckLogServer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CheckLogServer.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        public LoginModel(AccountsSaver accountsSaver, Login login)
+        public LoginModel(DatabaseContext database, Login login)
         {
-            this.accountsSaver = accountsSaver;
+            this.database = database;
             this.login = login;
         }
-        private readonly AccountsSaver accountsSaver;
+        private readonly DatabaseContext database;
         private readonly Login login;
 
         [BindProperty]
@@ -38,9 +38,7 @@ namespace CheckLogServer.Pages.Account
                 return Page();
             }
 
-            var accounts = await accountsSaver.LoadAsync();
-
-            var account = accounts.FirstOrDefault(t => t.Username == Account.Username);
+            var account = await database.Accounts.FirstOrDefaultAsync(t => t.Username == Account.Username);
             if (account == null)
             {
                 ModelState.AddModelError(nameof(Account.Username), "account not found");
@@ -53,11 +51,8 @@ namespace CheckLogServer.Pages.Account
                 return Page();
             }
 
-            var session = LoginMiddleware.AddSession(Response);
-            account.Sessions = (account.Sessions ?? Array.Empty<string>())
-                .Append(session).ToArray();
-
-            await accountsSaver.SaveAsync();
+            var _ = LoginMiddleware.AddSession(account, database, Response);
+            await database.SaveChangesAsync();
 
             return RedirectToPage("/Index");
         }

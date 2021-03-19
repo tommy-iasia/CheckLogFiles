@@ -1,0 +1,29 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
+
+.log-content {
+    .line {
+        display: flex;
+        font-family: 'Inconsolata', monospace;
+        color: darkgray;
+
+        .time {
+            min-width: 150px;
+        }
+
+        .level {
+            min-width: 50px;
+        }
+
+        .text {
+            word-break: break-all;
+        }
+
+        &.warn {
+            color: Highlight;
+        }
+
+        &.error {
+            color: red;
+        }
+    }
+}

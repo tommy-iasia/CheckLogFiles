@@ -1,0 +1,26 @@
+﻿using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+namespace CheckLogUpdater
+{
+    public class Configure
+    {
+        public string Address { get; set; }
+        public string Version { get; set; }
+
+        private const string FilePath = nameof(CheckLogUpdater) + ".config";
+        public static async Task<Configure> LoadAsync()
+        {
+            var json = await File.ReadAllTextAsync(FilePath);
+
+            return JsonSerializer.Deserialize<Configure>(json);
+        }
+        public async Task SaveAsync()
+        {
+            var json = JsonSerializer.Serialize(this);
+
+            await File.WriteAllTextAsync(FilePath, json);
+        }
+    }
+}
