@@ -26,7 +26,7 @@ Commonly, configuration fields are in key-value pair. And fields fall into two c
 - Program related fields
 - Runner related fields
 
-Program related fields are those that must be provided whenever program is invoked.  
+**Program related** fields are those that must be provided whenever program is invoked.  
 They define the basic of program flow
 
 | Field | Format | Example | Description |
