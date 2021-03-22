@@ -1,5 +1,7 @@
 # CheckLogFiles
 
+![image](https://github.com/tommy-iasia/CheckLogFiles/raw/master/CheckLogServer/previews/21032204-map.png?raw=true)
+
 This project consists of three components
 - [Worker](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogWorker/readme.md)
 - [Server](#server)
