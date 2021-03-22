@@ -49,9 +49,11 @@ There are many runners used for different purposes. And each of them requires di
 
 - [Harddisk Remain Low](#harddisk-remain-low-runner)
 - [Harddisk Over-Growth](#harddisk-over-growth)
+- [Oversize Daily Directory Runner](#oversize-daily-directory-runner)
 - [KPI Queue Runner](#kpi-queue-runner)
-- [Large Retransmission Request Runner](#large-retransmission-request-runner)
 - [NetWarn Overflow Runner](#netwarn-overflow-runner)
+- [NetError Overflow Runner](#neterror-overflow-runner)
+- [Large Retransmission Request Runner](#large-retransmission-request-runner)
 
 ## Harddisk Remain Low Runner
 
@@ -101,6 +103,28 @@ Check the harddisk growth speed and fire warning when space is used fast
 
 > Suggested to be called *every 15 minutes*
 
+## Oversize Daily Directory Runner
+
+````
+{
+  "Server": "https://localhost:44369",
+  "Identifier": "iAsia.Example.A",
+  "Runner": "OversizeDailyDirectoryRunner",
+  "PathPattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>",
+  "WarnSize": "1GB",
+  "ErrorSize": "10GB"
+}
+````
+
+| Field | Format | Example | Description |
+|-|-|-|-|
+| Runner | text | "OversizeDailyDirectoryRunner" | |
+| PathPattern | tag path | "C:\\iAsiaLogs\\*\<yyyyMMdd\>*" | folder path with date format tags |
+| WarnSize | size | "1GB" | size of folder which triggers a warning |
+| ErrorSize | size | "10GB" | size of folder which triggers an error |
+
+> Suggested to be called *hourly*
+
 ## KPI Queue Runner
 
 Check our *kpi.txt* and raise error when queue is not processing fast enough
@@ -137,30 +161,6 @@ Check our *kpi.txt* and raise error when queue is not processing fast enough
 This is extremely useful for MDF and OMDI.  
 Just remember to add DB queue into *IgnoreQueuePatterns* as DB items are meant to process slowly.
 
-## Large Retransmission Request Runner
-
-Check our *Retransmission.txt* and raise error when large re-transmission is triggered, indicating potential network failure
-
-````
-{
-  "Server": "https://localhost:44369",
-  "Identifier": "iAsia.Example.A",
-  "Runner": "LargeRetransmissionRequestRunner",
-  "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\Retransmission.txt",
-  "WarnCount": 100,
-  "ErrorCount": 1000
-}
-````
-
-| Field | Format | Example | Description |
-|-|-|-|-|
-| Runner | text | "LargeRetransmissionRequestRunner" | |
-| FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\Retransmission.txt" | *Retransmission.txt* path with date format tags |
-| WarnCount | number | 100 | re-transmission length which triggers a warning |
-| ErrorCount | number | 500 | re-transmission length which triggers an error |
-
-> Suggested to be called at least *every 5 minutes*
-
 ## NetWarn Overflow Runner
 
 ````
@@ -185,7 +185,56 @@ Check our *Retransmission.txt* and raise error when large re-transmission is tri
 
 > Suggested to be called *every 10 minutes*
 
-- If applying on MDF, you are advised to add iTrade port to *ErrorPorts* as iTrade can upward blocks MDF
-- If applying on iTrade, you are advised to add Cascade port to *ErrorPorts*
+- If applying on MDF, add iTrade port to *ErrorPorts* as iTrade can upward blocks MDF
+- If applying on iTrade, add Cascade port to *ErrorPorts*
 - Beware that *IgnoreSpan* must be smaller than the calling interval; otherwise the checking is always false
 - Checking frequently is necessary as *NetWarnLog.txt* can grow rapidly and may become too large to read
+
+## NetError Overflow Runner
+
+````
+{
+  "Server": "https://localhost:44369",
+  "Identifier": "iAsia.Example.A",
+  "Runner": "NetErrorOverflowRunner",
+  "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\NetErrorLog.txt",
+  "IgnoreCount": 100,
+  "IgnoreSpan": "30s"
+}
+````
+
+| Field | Format | Example | Description |
+|-|-|-|-|
+| Runner | text | "NetWarnOverflowRunner" | |
+| FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\NetErrorLog.txt" | *NetErrorLog.txt* path with date format tags |
+| IgnoreCount | number | 20 | amount of log line being ignored before firing |
+| IgnoreSpan | time span | "30s" | length of time being ignored before firing |
+
+> Suggested to be called *every 5 minutes*
+
+- Beware that *IgnoreSpan* must be smaller than the calling interval; otherwise the checking is always false
+- Checking frequently is necessary as *NetErrorLog.txt* can grow extremely fast
+
+## Large Retransmission Request Runner
+
+Check our *Retransmission.txt* and raise error when large re-transmission is triggered, indicating potential network failure
+
+````
+{
+  "Server": "https://localhost:44369",
+  "Identifier": "iAsia.Example.A",
+  "Runner": "LargeRetransmissionRequestRunner",
+  "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\Retransmission.txt",
+  "WarnCount": 100,
+  "ErrorCount": 1000
+}
+````
+
+| Field | Format | Example | Description |
+|-|-|-|-|
+| Runner | text | "LargeRetransmissionRequestRunner" | |
+| FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\Retransmission.txt" | *Retransmission.txt* path with date format tags |
+| WarnCount | number | 100 | re-transmission length which triggers a warning |
+| ErrorCount | number | 500 | re-transmission length which triggers an error |
+
+> Suggested to be called at least *every 5 minutes*
