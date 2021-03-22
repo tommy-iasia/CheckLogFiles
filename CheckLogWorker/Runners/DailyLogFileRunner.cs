@@ -11,6 +11,7 @@ namespace CheckLogWorker.Runners
     public abstract class DailyLogFileRunner : DailyFileRunner
     {
         public string Identifier { get; set; }
+        public string Runner { get; set; }
 
         protected override async Task RunAsync(string filePath, Logger logger)
         {
@@ -21,28 +22,32 @@ namespace CheckLogWorker.Runners
             }
 
             var lines = NextLinesAsync(filePath);
+
             await RunAsync(filePath, lines, logger);
         }
         protected abstract Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger);
 
-        public override int GetHashCode()
-        {
-            return (FilePattern?.GetHashCode() ?? 0)
-                ^ (Identifier?.GetHashCode() ?? 0);
-        }
-
         protected IAsyncEnumerable<string> NextLinesAsync(string filePath)
         {
-            var hash = GetHashCode();
+            var hash = GetFileHash();
 
             return NextLinesAsync(filePath, hash);
         }
-        private static async IAsyncEnumerable<string> NextLinesAsync(string filePath, int hash)
+        protected virtual string GetFileHash() => $"{FilePattern}, {DateTime.Today:yyMMdd}, {Identifier}, {Runner}";
+        private static async IAsyncEnumerable<string> NextLinesAsync(string filePath, string hash)
         {
             const string positionsFile = nameof(DailyLogFileRunner) + ".Positions.json";
             
-            var fromPositionsJson = await File.ReadAllTextAsync(positionsFile);
-            var fromPositions = JsonSerializer.Deserialize<DailyLogFilePosition[]>(fromPositionsJson);
+            DailyLogFilePosition[] fromPositions;
+            if (File.Exists(positionsFile))
+            {
+                var fromPositionsJson = await File.ReadAllTextAsync(positionsFile);
+                fromPositions = JsonSerializer.Deserialize<DailyLogFilePosition[]>(fromPositionsJson);
+            }
+            else
+            {
+                fromPositions = Array.Empty<DailyLogFilePosition>();
+            }
 
             var fromPosition = fromPositions.FirstOrDefault(t => t.Path == filePath && t.Hash == hash);
             if (fromPosition == null)
@@ -73,12 +78,14 @@ namespace CheckLogWorker.Runners
                 .Take(500)
                 .ToArray();
 
-            var toPositionsJson = JsonSerializer.Serialize(toPositions);
+            var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+            var toPositionsJson = JsonSerializer.Serialize(toPositions, jsonOptions);
+
             await File.WriteAllTextAsync(positionsFile, toPositionsJson);
         }
         private static async IAsyncEnumerable<string> ReadLinesAsync(Stream stream)
         {
-            using var reader = new StreamReader(stream, Encoding.UTF8);
+            var reader = new StreamReader(stream, Encoding.UTF8);
 
             while (true)
             {
@@ -92,7 +99,10 @@ namespace CheckLogWorker.Runners
                     var lastByte = stream.ReadByte();
                     if (lastByte == '\n')
                     {
-                        yield return line;
+                        if (line != null)
+                        {
+                            yield return line;
+                        }
                     }
                     else
                     {
@@ -103,7 +113,10 @@ namespace CheckLogWorker.Runners
                 }
                 else
                 {
-                    yield return line;
+                    if (line != null)
+                    {
+                        yield return line;
+                    }
                 }
             }
         }

@@ -15,7 +15,7 @@ namespace CheckLogWorker.Runners
 
         public DateTime Time { get; set; }
 
-        public override string ToString() => $"Drive {Name} with {AvailableFreeSpace}B/{TotalFreeSpace}B/{TotalSize}B at {Time}";
+        public override string ToString() => $"Drive {Name} with {AvailableFreeSpace:#,##0}B available within total {TotalSize:#,##0}B at {Time}";
 
         public const string FileName = nameof(HarddiskSpaceRecord) + "s.json";
         public static async Task<HarddiskSpaceRecord[]> LoadAsync()
@@ -30,7 +30,9 @@ namespace CheckLogWorker.Runners
         }
         public static async Task SaveAsync(HarddiskSpaceRecord[] records)
         {
-            var json = JsonSerializer.Serialize(records);
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            var json = JsonSerializer.Serialize(records, options);
+
             await File.WriteAllTextAsync(FileName, json);
         }
     }

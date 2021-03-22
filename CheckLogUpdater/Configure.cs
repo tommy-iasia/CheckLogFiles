@@ -18,7 +18,8 @@ namespace CheckLogUpdater
         }
         public async Task SaveAsync()
         {
-            var json = JsonSerializer.Serialize(this);
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            var json = JsonSerializer.Serialize(this, options);
 
             await File.WriteAllTextAsync(FilePath, json);
         }

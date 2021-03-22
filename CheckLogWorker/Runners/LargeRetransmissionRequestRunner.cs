@@ -15,6 +15,12 @@ namespace CheckLogWorker.Runners
                 return false;
             }
 
+            if (!FilePattern.EndsWith("Retransmission.txt"))
+            {
+                await logger.ErrorAsync($"Configure {nameof(FilePattern)} should end with \"Retransmission.txt\"");
+                return false;
+            }
+
             if (WarnCount <= 0)
             {
                 await logger.ErrorAsync($"Configure {nameof(WarnCount)} should not be less than zero");
@@ -59,15 +65,15 @@ namespace CheckLogWorker.Runners
             foreach (var (channel, from, to) in requests)
             {
                 var count = to - from + 1;
-                await logger.InfoAsync($"Re-transmission {count} sequences from {from} to {to} in channel {channel}");
+                await logger.InfoAsync($"Re-transmission of {count} sequences from {from} to {to} in channel {channel}");
 
                 if (count >= ErrorCount)
                 {
-                    await logger.ErrorAsync($"Re-tranmission {count} sequences in channel {channel} is alerted");
+                    await logger.ErrorAsync($"Re-tranmission of {count} sequences in channel {channel} is alerted");
                 }
                 else if (count >= WarnCount)
                 {
-                    await logger.WarnAsync($"Re-tranmission {count} sequences in channel {channel} is alerted");
+                    await logger.WarnAsync($"Re-tranmission of {count} sequences in channel {channel} is alerted");
                 }
             }
         }

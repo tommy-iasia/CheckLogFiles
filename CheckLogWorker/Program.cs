@@ -32,7 +32,13 @@ namespace CheckLogWorker
             var program = JsonSerializer.Deserialize<Program>(json);
             if (string.IsNullOrWhiteSpace(program.Runner))
             {
-                Console.Error.WriteLine("No runner is found.");
+                Console.Error.WriteLine("Runner is not provided.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(program.Identifier))
+            {
+                Console.Error.WriteLine("Identifier is not provided.");
                 return;
             }
 
@@ -52,15 +58,15 @@ namespace CheckLogWorker
 
             IRunner runner = program.Runner switch
             {
-                nameof(HarddiskRemainLow) => JsonSerializer.Deserialize<HarddiskRemainLow>(json),
-                nameof(HarddiskOverGrowth) => JsonSerializer.Deserialize<HarddiskOverGrowth>(json),
+                nameof(HarddiskRemainLowRunner) => JsonSerializer.Deserialize<HarddiskRemainLowRunner>(json),
+                nameof(HarddiskOverGrowthRunner) => JsonSerializer.Deserialize<HarddiskOverGrowthRunner>(json),
                 nameof(KpiQueueRunner) => JsonSerializer.Deserialize<KpiQueueRunner>(json),
                 nameof(LargeRetransmissionRequestRunner) => JsonSerializer.Deserialize<LargeRetransmissionRequestRunner>(json),
                 nameof(NetWarnOverflowRunner) => JsonSerializer.Deserialize<NetWarnOverflowRunner>(json),
                 nameof(NetErrorOverflowRunner) => JsonSerializer.Deserialize<NetErrorOverflowRunner>(json),
                 nameof(OversizeDailyDirectoryRunner) => JsonSerializer.Deserialize<OversizeDailyDirectoryRunner>(json),
                 nameof(RetransmissionRejectedRunner) => JsonSerializer.Deserialize<RetransmissionRejectedRunner>(json),
-                _ => throw new InvalidOperationException()
+                _ => throw new InvalidOperationException($"Cannot not match runner with name {program.Runner}")
             };
 
             await logger.InfoAsync("Prepare");

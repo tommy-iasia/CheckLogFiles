@@ -2,7 +2,7 @@
   "profiles": {
     "CheckLogWorker": {
       "commandName": "Project",
-      "commandLineArgs": "Program.json iAsia.Pikachu-HarddiskRemainLow.json"
+      "commandLineArgs": "Program.json"
     }
   }
 }

@@ -30,7 +30,7 @@ namespace CheckLogWorker.Runners
         public string FilePattern { get; set; }
         public static string TryTimeReplace(string pattern, DateTime time)
         {
-            return Regex.Replace(pattern, @"<(?<format>)>", t =>
+            return Regex.Replace(pattern, @"<(?<format>[^>]+)>", t =>
             {
                 var format = t.Groups["format"].Value;
                 return time.ToString(format);

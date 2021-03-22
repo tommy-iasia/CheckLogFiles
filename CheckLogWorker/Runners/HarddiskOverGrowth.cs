@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
 {
-    public class HarddiskOverGrowth : HarddiskRunner
+    public class HarddiskOverGrowthRunner : HarddiskRunner
     {
         public override async Task<bool> PrepareAsync(Logger logger)
         {
@@ -26,7 +26,7 @@ namespace CheckLogWorker.Runners
                 return false;
             }
 
-            await logger.InfoAsync($"Warn will be raised at {warnRate.size}B/{(long)warnRate.time.TotalSeconds}s");
+            await logger.InfoAsync($"Warn will be raised at {warnRate.size}B/{warnRate.time.TotalSeconds}s");
 
             if (string.IsNullOrWhiteSpace(ErrorRate))
             {
@@ -39,7 +39,7 @@ namespace CheckLogWorker.Runners
                 return false;
             }
 
-            await logger.InfoAsync($"Error will be raised at {errorRate.size}B/{(long)errorRate.time.TotalSeconds}s");
+            await logger.InfoAsync($"Error will be raised at {errorRate.size:#,##0}B/{errorRate.time.TotalSeconds:#,##0}s");
 
             return true;
         }
@@ -63,7 +63,7 @@ namespace CheckLogWorker.Runners
 
             var realSize = oldRecord.AvailableFreeSpace - newRecord.AvailableFreeSpace;
             var realTime = newRecord.Time - oldRecord.Time;
-            await logger.InfoAsync($"Growth is {realSize}B/{(long)realTime.TotalSeconds}s");
+            await logger.InfoAsync($"Growth is {realSize:#,##0}B/{(long)realTime.TotalSeconds:#,##0}s");
 
             if (realTime < TimeSpan.FromSeconds(1))
             {

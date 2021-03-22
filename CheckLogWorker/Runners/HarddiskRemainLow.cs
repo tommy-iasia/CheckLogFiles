@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
 {
-    public class HarddiskRemainLow : HarddiskRunner
+    public class HarddiskRemainLowRunner : HarddiskRunner
     {
         public override async Task<bool> PrepareAsync(Logger logger)
         {

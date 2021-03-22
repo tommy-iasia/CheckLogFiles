@@ -16,6 +16,12 @@ namespace CheckLogWorker.Runners
                 return false;
             }
 
+            if (!FilePattern.EndsWith("kpi.txt"))
+            {
+                await logger.ErrorAsync($"Configure {nameof(FilePattern)} should end with \"kpi.txt\"");
+                return false;
+            }
+
             if (IgnoreQueuePatterns != null)
             {
                 foreach (var pattern in IgnoreQueuePatterns)
