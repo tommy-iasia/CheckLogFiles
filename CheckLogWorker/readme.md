@@ -51,6 +51,7 @@ There are many runners used for different purposes. And each of them requires di
 - [Harddisk Over-Growth](#harddisk-over-growth)
 - [KPI Queue Runner](#kpi-queue-runner)
 - [Large Retransmission Request Runner](#large-retransmission-request-runner)
+- [NetWarn Overflow Runner](#netwarn-overflow-runner)
 
 ## Harddisk Remain Low Runner
 
@@ -159,3 +160,32 @@ Check our *Retransmission.txt* and raise error when large re-transmission is tri
 | ErrorCount | number | 500 | re-transmission length which triggers an error |
 
 > Suggested to be called at least *every 5 minutes*
+
+## NetWarn Overflow Runner
+
+````
+{
+  "Server": "https://localhost:44369",
+  "Identifier": "iAsia.Example.A",
+  "Runner": "NetWarnOverflowRunner",
+  "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\NetWarnLog.txt",
+  "IgnoreCount": 50,
+  "IgnoreSpan": "5min",
+  "ErrorPorts": [ 24000 ]
+}
+````
+
+| Field | Format | Example | Description |
+|-|-|-|-|
+| Runner | text | "NetWarnOverflowRunner" | |
+| FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\NetWarnLog.txt" | *NetWarnLog.txt* path with date format tags |
+| IgnoreCount | number | 100 | amount of log line being ignored before firing |
+| IgnoreSpan | time span | "5min" | length of time being ignored before firing |
+| ErrorPorts | int array | [ 24000 ] | ports that raise error instead of warning |
+
+> Suggested to be called *every 10 minutes*
+
+- If applying on MDF, you are advised to add iTrade port to *ErrorPorts* as iTrade can upward blocks MDF
+- If applying on iTrade, you are advised to add Cascade port to *ErrorPorts*
+- Beware that *IgnoreSpan* must be smaller than the calling interval; otherwise the checking is always false
+- Checking frequently is necessary as *NetWarnLog.txt* can grow rapidly and may become too large to read
