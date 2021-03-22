@@ -1,9 +1,9 @@
 # Check Log Server
 
-![map](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/previews/21032204-map.png?raw=true)
-
 When worker completes its runner, the result will be sent to server.  
 If warning or error happens, server will notify users through Signal-R and Telegram.
+
+![map](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/previews/21032204-map.png?raw=true)
 
 # Nodes
 
