@@ -54,10 +54,15 @@ And if possible, deploy one set of runners in server machine monitoring the spac
 
 # Admin Control
 
-Currently, there is role assignment in accounts. Accounts are in *Accounts* table with plain text password.
+Currently, there is role assignment in accounts. Accounts are in *Accounts* table with plain text password.  
 You are suggested to use the default account **Pikachu** before role assignment is employed in future.
 
-However, no users can create, update or delete records or logs.
+However, no users can create, update or delete records or logs.  
 Only admin who can access to file system and **Database.db** holds the right of modifying data.
 
 You may use any [SQLite editor](https://sqlitebrowser.org/) to modify data in *Database.db* if needed.
+
+# Telegram
+
+Server can send message through telegram if needed. Add a row in *Telegrams* table.  
+Bot token is like 198169095:ezeY6DjZq2Hn8QsYQUuL79tTeydqCsAAGAO. Channel id, like -1066537600175.
