@@ -2,16 +2,17 @@
     margin-top: 5px;
     border: 3px dotted transparent;
     border-radius: 10px;
-    display: flex;
     padding: 10px;
+    display: flex;
+    align-items: start;
     font-family: 'Montserrat', sans-serif;
 
     .node {
         min-width: 100px;
         border-radius: 25px;
+        padding: 10px 20px;
         display: flex;
         flex-direction: column;
-        padding: 10px 20px;
         background-color: rgba(0, 0, 0, .02);
         cursor: default;
 
@@ -51,6 +52,11 @@
         &.error {
             background-color: rgba(255, 0, 0, .05);
         }
+    }
+
+    > .node {
+        margin-right: 10px;
+        margin-bottom: 10px;
     }
 
     &.warn {
