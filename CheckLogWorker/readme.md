@@ -54,6 +54,7 @@ There are many runners used for different purposes. And each of them requires di
 - [NetWarn Overflow Runner](#netwarn-overflow-runner)
 - [NetError Overflow Runner](#neterror-overflow-runner)
 - [Large Retransmission Request Runner](#large-retransmission-request-runner)
+- [Retransmission Rejected Runner](#retransmission-rejected-runner)
 
 ## Harddisk Remain Low Runner
 
@@ -238,3 +239,23 @@ Check our *Retransmission.txt* and raise error when large re-transmission is tri
 | ErrorCount | number | 500 | re-transmission length which triggers an error |
 
 > Suggested to be called at least *every 5 minutes*
+
+## Retransmission Rejected Runner
+
+Check our *Retransmission.txt* and raise error when re-transmission is rejected by HKEX, indicating a refresh
+
+````
+{
+  "Server": "https://localhost:44369",
+  "Identifier": "iAsia.Example.A",
+  "Runner": "RetransmissionRejectedRunner",
+  "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\Retransmission.txt"
+}
+````
+
+| Field | Format | Example | Description |
+|-|-|-|-|
+| Runner | text | "RetransmissionRejectedRunner" | |
+| FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\Retransmission.txt" | *Retransmission.txt* path with date format tags |
+
+> Suggested to be called at least *every 3 minutes*
