@@ -153,10 +153,10 @@ Check our *kpi.txt* and raise error when queue is not processing fast enough
 | Runner | text | "KpiQueueRunner" | |
 | FilePattern | tag path | "C:\\iAsiaLogs\\*\<yyyyMMdd\>*\\kpi.txt" | the *kpi.txt* path with date format tags |
 | IgnoreQueuePatterns | regex array | ["Q-CMDFDBSAVING-C", "Q-ITDBW\\."] | regex patterns for ignoring queue names |
-| WarnProportion | number | 0.01 | unprocessed proportion in queue triggering a warning |
-| WarnCount | number | 100 | unprocessed amount in queue which calming a warning |
-| ErrorProportion | number | 0.05 | unprocessed proportion in queue triggering an error |
-| ErrorCount | number | 500 | unprocessed amount in queue which calming an error |
+| WarnProportion | decimal | 0.01 | unprocessed proportion in queue triggering a warning |
+| WarnCount | int | 100 | unprocessed amount in queue which calming a warning |
+| ErrorProportion | decimal | 0.05 | unprocessed proportion in queue triggering an error |
+| ErrorCount | int | 500 | unprocessed amount in queue which calming an error |
 
 > Suggested to be called *every 15 minutes*
 
@@ -181,7 +181,7 @@ Just remember to add DB queue into *IgnoreQueuePatterns* as DB items are meant t
 |-|-|-|-|
 | Runner | text | "NetWarnOverflowRunner" | |
 | FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\NetWarnLog.txt" | *NetWarnLog.txt* path with date format tags |
-| IgnoreCount | number | 100 | amount of log line being ignored before firing |
+| IgnoreCount | int | 100 | amount of log line being ignored before firing |
 | IgnoreSpan | time span | "5min" | length of time being ignored before firing |
 | ErrorPorts | int array | [ 24000 ] | ports that raise error instead of warning |
 
@@ -209,7 +209,7 @@ Just remember to add DB queue into *IgnoreQueuePatterns* as DB items are meant t
 |-|-|-|-|
 | Runner | text | "NetWarnOverflowRunner" | |
 | FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\NetErrorLog.txt" | *NetErrorLog.txt* path with date format tags |
-| IgnoreCount | number | 20 | amount of log line being ignored before firing |
+| IgnoreCount | int | 20 | amount of log line being ignored before firing |
 | IgnoreSpan | time span | "30s" | length of time being ignored before firing |
 
 > Suggested to be called *every 5 minutes*
@@ -236,8 +236,8 @@ Check our *Retransmission.txt* and raise error when large re-transmission is tri
 |-|-|-|-|
 | Runner | text | "LargeRetransmissionRequestRunner" | |
 | FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\Retransmission.txt" | *Retransmission.txt* path with date format tags |
-| WarnCount | number | 100 | re-transmission length which triggers a warning |
-| ErrorCount | number | 500 | re-transmission length which triggers an error |
+| WarnCount | int | 100 | re-transmission length which triggers a warning |
+| ErrorCount | int | 500 | re-transmission length which triggers an error |
 
 > Suggested to be called at least *every 5 minutes*
 
