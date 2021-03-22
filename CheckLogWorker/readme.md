@@ -123,7 +123,7 @@ Checks our KPI.txt and raise error when queue is not processing fast enough
 | Field | Format | Example | Description |
 |-|-|-|-|
 | Runner | text | "KpiQueueRunner" | |
-| FilePattern | tagged path | "C:\\iAsiaLogs\\\<yyyyMMdd\>\\kpi.txt" | the *kpi.txt* path with date format tag |
+| FilePattern | tag path | "C:\\iAsiaLogs\\\<yyyyMMdd\>\\kpi.txt" | the *kpi.txt* path with date format tags |
 | IgnoreQueuePatterns | regex array | ["Q-CMDFDBSAVING-C", "Q-ITDBW\\."] | regex patterns for ignoring queue names |
 | WarnProportion | number | 0.01 | unprocessed proportion in queue triggering a warning |
 | WarnCount | number | 100 | unprocessed amount in queue which calming a warning |
