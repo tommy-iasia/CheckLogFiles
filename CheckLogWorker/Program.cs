@@ -68,6 +68,7 @@ namespace CheckLogWorker
             if (!await runner.PrepareAsync(logger))
             {
                 await logger.ErrorAsync("Failed at prepare stage");
+                return;
             }
 
             await logger.InfoAsync("Start");
@@ -85,7 +86,14 @@ namespace CheckLogWorker
                 || !program.SkipSendInfo)
             {
                 await logger.InfoAsync("Send");
-                await SendAsync(logName, program.Server, logger);
+                try
+                {
+                    await SendAsync(logName, program.Server, logger);
+                }
+                catch (Exception e)
+                {
+                    await logger.ErrorAsync(e);
+                }
             }
             else
             {
@@ -111,6 +119,7 @@ namespace CheckLogWorker
 
             return JsonSerializer.Serialize(outputDictionary);
         }
+
         private static async Task SendAsync(LogName name, string server, Logger logger)
         {
             var uri = $"{server.TrimEnd('/')}/Log/Create";

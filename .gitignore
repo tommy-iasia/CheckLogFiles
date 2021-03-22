@@ -8,3 +8,4 @@
 /CheckLogServer/wwwroot/lib
 /CheckLogUpdater/obj
 /CheckLogUpdater/bin
+/CheckLogServer/*.db
