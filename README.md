@@ -1,5 +1,7 @@
 # CheckLogFiles
 
+![image](https://github.com/tommy-iasia/CheckLogFiles/raw/master/CheckLogServer/previews/21032204-map.png?raw=true)
+
 This project consists of three components
 - [Worker](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogWorker/readme.md)
 - [Server](#server)
@@ -14,14 +16,11 @@ Completing the checking, it submit the result to Server.
 
 # Server
 
-Server consists a map of all clients.
+Server consists a map of all clients. When a client submits its checking, server will update the map.  
+When needed, it fires notifications.
 
-When a client submits its checking, server will update the map.
-
-And fire any notification if needed.
+[continue reading](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/readme.md)
 
 # Updater
 
-Updater can receive update information from server.
-
-And update all there components automatically if needed.
+Update workers automatically according to server's instruction.
