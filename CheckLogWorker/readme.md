@@ -277,4 +277,4 @@ Every logs are submitted to except that *SkipSendInfo* is set true in configure 
 
 ![server](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/previews/21032203-logs.png?raw=true)
 
-Continue with the [server setting](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/readme.md)
+Continue with the [server setting](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/readme.md).
