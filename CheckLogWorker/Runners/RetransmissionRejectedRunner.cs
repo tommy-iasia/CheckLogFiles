@@ -1,8 +1,6 @@
 ﻿using CheckLogWorker.Enumerable;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -10,6 +8,22 @@ namespace CheckLogWorker.Runners
 {
     public class RetransmissionRejectedRunner : DailyLogFileRunner
     {
+        public override async Task<bool> PrepareAsync(Logger logger)
+        {
+            if (!await base.PrepareAsync(logger))
+            {
+                return false;
+            }
+
+            if (!FilePattern.EndsWith(LargeRetransmissionRequestRunner.FileName))
+            {
+                await logger.ErrorAsync($"Configure {nameof(FilePattern)} should end with \"{LargeRetransmissionRequestRunner.FileName}\"");
+                return false;
+            }
+
+            return true;
+        }
+
         protected override async Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger)
         {
             var regex = new Regex(@"RetransmissionTask\] \[Retransmission Response \(\d+\). Retrans Status=2 Channel=(?<channel>\d+) BeginSeq=(?<begin>\d+) EndSeq=(?<end>\d+)\]");
@@ -32,7 +46,7 @@ namespace CheckLogWorker.Runners
 
             foreach (var (channel, begin, end) in rejects)
             {
-                await logger.ErrorAsync($"Re-transmission in {channel} are rejected from {begin} to {end}");
+                await logger.ErrorAsync($"Re-transmission in channel {channel} from {begin} to {end} is rejected");
             }
         }
     }

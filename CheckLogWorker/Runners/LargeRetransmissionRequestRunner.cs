@@ -8,6 +8,7 @@ namespace CheckLogWorker.Runners
 {
     public class LargeRetransmissionRequestRunner : DailyLogFileRunner
     {
+        public const string FileName = "Retransmission.txt";
         public override async Task<bool> PrepareAsync(Logger logger)
         {
             if (!await base.PrepareAsync(logger))
@@ -15,9 +16,9 @@ namespace CheckLogWorker.Runners
                 return false;
             }
 
-            if (!FilePattern.EndsWith("Retransmission.txt"))
+            if (!FilePattern.EndsWith(FileName))
             {
-                await logger.ErrorAsync($"Configure {nameof(FilePattern)} should end with \"Retransmission.txt\"");
+                await logger.ErrorAsync($"Configure {nameof(FilePattern)} should end with \"{FileName}\"");
                 return false;
             }
 
@@ -39,9 +40,9 @@ namespace CheckLogWorker.Runners
 
             return true;
         }
+
         public int WarnCount { get; set; }
         public int ErrorCount { get; set; }
-
         protected override async Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger)
         {
             var regex = new Regex(@"RetransmissionManager\] \[\[(?<channel>\d+)\]SEND Retansmission From=(?<from>\d+) To=(?<to>\d+)\]");

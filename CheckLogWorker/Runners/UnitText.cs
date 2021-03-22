@@ -60,7 +60,7 @@ namespace CheckLogWorker.Runners
         public static TimeSpan ParseSpan(string text) => TryParseSpan(text, out var span) ? span : throw new ArgumentException(null, nameof(text));
         public static bool TryParseSpan(string text, out TimeSpan span)
         {
-            var match = Regex.Match(text, @"(?<value>[\d.]+)?(?<unit>millisecond|ms|second|s|minute|min|m|hour|hr|h|day|d)");
+            var match = Regex.Match(text, @"(?<value>[\d.]+)?\s*(?<unit>millisecond|ms|second|s|minute|min|m|hour|hr|h|day|d)");
 
             if (!match.Success)
             {
