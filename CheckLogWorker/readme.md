@@ -264,3 +264,17 @@ Check our *Retransmission.txt* and raise error when re-transmission is rejected 
 # Scheduling
 
 You are adviced to use Window's Task Scheduler to call the CheckLogWorker.exe in your favor.
+
+# Logging
+
+Logs are generated whenever the worker program is called.
+
+They are logged in *.log* files. You are suggested to clear them from time to time.
+
+# Submitting to Server
+
+Every logs are submitted to except that *SkipSendInfo* is set true in configure and no warning or error is generated.
+
+![server](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/previews/21032203-logs.png?raw=true)
+
+Continue with the [server setting](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/readme.md).
