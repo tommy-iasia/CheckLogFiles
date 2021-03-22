@@ -26,7 +26,7 @@ Commonly, configuration fields are in key-value pair. And fields fall into two c
 - Program related fields
 - Runner related fields
 
-Program related fields are those that must be provided whenever program is invoked.  
+**Program related** fields are those that must be provided whenever program is invoked.  
 They define the basic of program flow
 
 | Field | Format | Example | Description |
@@ -45,12 +45,17 @@ In order to avoid duplication, you are adviced to split configuration into diffe
 
 # Runners
 
-There are many runners used for different purposes. And each of them requires different configuration fields.
+There are many runners for different purposes. More are to be added.  
+Each of them requires different configuration fields.
 
 - [Harddisk Remain Low](#harddisk-remain-low-runner)
 - [Harddisk Over-Growth](#harddisk-over-growth)
+- [Oversize Daily Directory Runner](#oversize-daily-directory-runner)
 - [KPI Queue Runner](#kpi-queue-runner)
+- [NetWarn Overflow Runner](#netwarn-overflow-runner)
+- [NetError Overflow Runner](#neterror-overflow-runner)
 - [Large Retransmission Request Runner](#large-retransmission-request-runner)
+- [Retransmission Rejected Runner](#retransmission-rejected-runner)
 
 ## Harddisk Remain Low Runner
 
@@ -100,6 +105,28 @@ Check the harddisk growth speed and fire warning when space is used fast
 
 > Suggested to be called *every 15 minutes*
 
+## Oversize Daily Directory Runner
+
+````
+{
+  "Server": "https://localhost:44369",
+  "Identifier": "iAsia.Example.A",
+  "Runner": "OversizeDailyDirectoryRunner",
+  "PathPattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>",
+  "WarnSize": "1GB",
+  "ErrorSize": "10GB"
+}
+````
+
+| Field | Format | Example | Description |
+|-|-|-|-|
+| Runner | text | "OversizeDailyDirectoryRunner" | |
+| PathPattern | tag path | "C:\\iAsiaLogs\\*\<yyyyMMdd\>*" | folder path with date format tags |
+| WarnSize | size | "1GB" | size of folder which triggers a warning |
+| ErrorSize | size | "10GB" | size of folder which triggers an error |
+
+> Suggested to be called *hourly*
+
 ## KPI Queue Runner
 
 Check our *kpi.txt* and raise error when queue is not processing fast enough
@@ -126,15 +153,69 @@ Check our *kpi.txt* and raise error when queue is not processing fast enough
 | Runner | text | "KpiQueueRunner" | |
 | FilePattern | tag path | "C:\\iAsiaLogs\\*\<yyyyMMdd\>*\\kpi.txt" | the *kpi.txt* path with date format tags |
 | IgnoreQueuePatterns | regex array | ["Q-CMDFDBSAVING-C", "Q-ITDBW\\."] | regex patterns for ignoring queue names |
-| WarnProportion | number | 0.01 | unprocessed proportion in queue triggering a warning |
-| WarnCount | number | 100 | unprocessed amount in queue which calming a warning |
-| ErrorProportion | number | 0.05 | unprocessed proportion in queue triggering an error |
-| ErrorCount | number | 500 | unprocessed amount in queue which calming an error |
+| WarnProportion | decimal | 0.01 | unprocessed proportion in queue triggering a warning |
+| WarnCount | int | 100 | unprocessed amount in queue which calming a warning |
+| ErrorProportion | decimal | 0.05 | unprocessed proportion in queue triggering an error |
+| ErrorCount | int | 500 | unprocessed amount in queue which calming an error |
 
 > Suggested to be called *every 15 minutes*
 
 This is extremely useful for MDF and OMDI.  
 Just remember to add DB queue into *IgnoreQueuePatterns* as DB items are meant to process slowly.
+
+## NetWarn Overflow Runner
+
+````
+{
+  "Server": "https://localhost:44369",
+  "Identifier": "iAsia.Example.A",
+  "Runner": "NetWarnOverflowRunner",
+  "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\NetWarnLog.txt",
+  "IgnoreCount": 50,
+  "IgnoreSpan": "5min",
+  "ErrorPorts": [ 24000 ]
+}
+````
+
+| Field | Format | Example | Description |
+|-|-|-|-|
+| Runner | text | "NetWarnOverflowRunner" | |
+| FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\NetWarnLog.txt" | *NetWarnLog.txt* path with date format tags |
+| IgnoreCount | int | 100 | amount of log line being ignored before firing |
+| IgnoreSpan | time span | "5min" | length of time being ignored before firing |
+| ErrorPorts | int array | [ 24000 ] | ports that raise error instead of warning |
+
+> Suggested to be called *every 10 minutes*
+
+- If applying on MDF, add iTrade port to *ErrorPorts* as iTrade can upward blocks MDF
+- If applying on iTrade, add Cascade port to *ErrorPorts*
+- Beware that *IgnoreSpan* must be smaller than the calling interval; otherwise the checking is always false
+- Checking frequently is necessary as *NetWarnLog.txt* can grow rapidly and may become too large to read
+
+## NetError Overflow Runner
+
+````
+{
+  "Server": "https://localhost:44369",
+  "Identifier": "iAsia.Example.A",
+  "Runner": "NetErrorOverflowRunner",
+  "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\NetErrorLog.txt",
+  "IgnoreCount": 100,
+  "IgnoreSpan": "30s"
+}
+````
+
+| Field | Format | Example | Description |
+|-|-|-|-|
+| Runner | text | "NetWarnOverflowRunner" | |
+| FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\NetErrorLog.txt" | *NetErrorLog.txt* path with date format tags |
+| IgnoreCount | int | 20 | amount of log line being ignored before firing |
+| IgnoreSpan | time span | "30s" | length of time being ignored before firing |
+
+> Suggested to be called *every 5 minutes*
+
+- Beware that *IgnoreSpan* must be smaller than the calling interval; otherwise the checking is always false
+- Checking frequently is necessary as *NetErrorLog.txt* can grow extremely fast
 
 ## Large Retransmission Request Runner
 
@@ -155,7 +236,31 @@ Check our *Retransmission.txt* and raise error when large re-transmission is tri
 |-|-|-|-|
 | Runner | text | "LargeRetransmissionRequestRunner" | |
 | FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\Retransmission.txt" | *Retransmission.txt* path with date format tags |
-| WarnCount | number | 100 | re-transmission length which triggers a warning |
-| ErrorCount | number | 500 | re-transmission length which triggers an error |
+| WarnCount | int | 100 | re-transmission length which triggers a warning |
+| ErrorCount | int | 500 | re-transmission length which triggers an error |
 
 > Suggested to be called at least *every 5 minutes*
+
+## Retransmission Rejected Runner
+
+Check our *Retransmission.txt* and raise error when re-transmission is rejected by HKEX, indicating a refresh
+
+````
+{
+  "Server": "https://localhost:44369",
+  "Identifier": "iAsia.Example.A",
+  "Runner": "RetransmissionRejectedRunner",
+  "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\Retransmission.txt"
+}
+````
+
+| Field | Format | Example | Description |
+|-|-|-|-|
+| Runner | text | "RetransmissionRejectedRunner" | |
+| FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\Retransmission.txt" | *Retransmission.txt* path with date format tags |
+
+> Suggested to be called at least *every 3 minutes*
+
+# Scheduling
+
+You are adviced to use Window's Task Scheduler to call the CheckLogWorker.exe in your favor.

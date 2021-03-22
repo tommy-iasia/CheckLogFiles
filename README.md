@@ -1,15 +1,16 @@
 # CheckLogFiles
 
 This project consists of three components
-- Worker
-- Server
-- Updater
+- [Worker](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogWorker/readme.md)
+- [Server](#server)
+- [Updater](#updater)
 
 # Worker
 
-Worker runs variety of checkings on client machine according to the configure files provided.
-
+Worker runs variety of checkings on client machine according to the configure files provided.  
 Completing the checking, it submit the result to Server.
+
+[continue reading](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogWorker/readme.md)
 
 # Server
 
