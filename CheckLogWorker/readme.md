@@ -259,3 +259,7 @@ Check our *Retransmission.txt* and raise error when re-transmission is rejected 
 | FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\Retransmission.txt" | *Retransmission.txt* path with date format tags |
 
 > Suggested to be called at least *every 3 minutes*
+
+# Scheduling
+
+You are adviced to use Window's Task Scheduler to call the CheckLogWorker.exe in your favor.
