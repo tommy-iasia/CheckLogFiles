@@ -16,6 +16,8 @@ namespace CheckLogServer.Models
 
         public DbSet<Update> Updates { get; set; }
 
+        public DbSet<Telegram> Telegrams { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);

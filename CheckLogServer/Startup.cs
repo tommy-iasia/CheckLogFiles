@@ -1,6 +1,7 @@
 using CheckLogServer.Hubs;
 using CheckLogServer.Middlewares;
 using CheckLogServer.Models;
+using CheckLogServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,6 +31,8 @@ namespace CheckLogServer
             services.AddDbContext<DatabaseContext>();
 
             services.AddScoped<Login>();
+
+            services.AddTransient<TelegramService>();
 
             services.AddRazorPages().AddRazorRuntimeCompilation();
 

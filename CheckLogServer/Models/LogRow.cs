@@ -13,5 +13,7 @@ namespace CheckLogServer.Models
 
         public string FileName { get; set; }
         public bool Deleted { get; set; }
+
+        public string Client { get; set; }
     }
 }

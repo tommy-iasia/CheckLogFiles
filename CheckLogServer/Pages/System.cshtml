@@ -1,6 +1,7 @@
 ﻿@page
 @model SystemModel
 
+@inject DatabaseContext database
 @inject Login login
 @{
     ViewData["Title"] = "System";
@@ -34,6 +35,19 @@
         <tr>
             <td>Session</td>
             <td>@(login.Session?.Code ?? "(no session)")</td>
+        </tr>
+
+        <tr>
+            <td>Telegram Bot</td>
+            @{ var bots = await database.Telegrams.Select(t => t.BotToken).ToListAsync(); }
+            @if (bots.Any())
+            {
+                <td>@string.Join(", ", bots)</td>
+            }
+            else
+            {
+                <td>(none)</td>
+            }
         </tr>
     </tbody>
 </table>

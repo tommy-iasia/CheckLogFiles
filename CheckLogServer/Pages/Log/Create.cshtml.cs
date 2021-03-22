@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CheckLogServer.Hubs;
 using CheckLogServer.Models;
+using CheckLogServer.Services;
 using CheckLogWorker;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,13 +16,15 @@ namespace CheckLogServer.Pages.Log
     [IgnoreAntiforgeryToken]
     public class CreateModel : PageModel
     {
-        public CreateModel(DatabaseContext database, IHubContext<NodeHub> nodeHub)
+        public CreateModel(DatabaseContext database, IHubContext<NodeHub> nodeHub, TelegramService telegramService)
         {
             this.database = database;
             this.nodeHub = nodeHub;
+            this.telegramService = telegramService;
         }
         private readonly DatabaseContext database;
         private readonly IHubContext<NodeHub> nodeHub;
+        private readonly TelegramService telegramService;
 
         [FromBody]
         public LogSubmit Submit { get; set; }
@@ -48,13 +51,16 @@ namespace CheckLogServer.Pages.Log
             var lines = Logger.Read(Submit.Text);
             var level = lines.GetLevel();
 
+            var client = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
+
             var row = new LogRow
             {
                 Name = name,
                 Time = Submit.Time,
                 Level = level,
                 FileName = fileName,
-                Deleted = false
+                Deleted = false,
+                Client = client
             };
             database.LogRows.Add(row);
 
@@ -75,19 +81,24 @@ namespace CheckLogServer.Pages.Log
 
             node.LogTime = DateTime.Now;
 
-            if (level > LogLevel.Info)
+            if (level > LogLevel.Info
+                && !node.Disabled
+                && level >= (node.LevelLog?.Level ?? LogLevel.Unknown))
             {
-                if (!node.Disabled
-                    && level >= (node.LevelLog?.Level ?? LogLevel.Unknown))
-                {
-                    node.LevelLog = row;
-                    node.LevelTime = node.LogTime;
-                }
+                node.LevelLog = row;
+                node.LevelTime = node.LogTime;
             }
 
             await database.SaveChangesAsync();
 
             var _ = nodeHub.NodeAsync(node);
+
+            if (level > LogLevel.Info
+                && !node.Disabled
+                && level > (node.LevelLog?.Level ?? LogLevel.Unknown))
+            {
+                await telegramService.SendMessageAsync($"Node {node.Identitifer} is raised to {level} level");
+            }
 
             return Content($"{row.Name} created");
         }
