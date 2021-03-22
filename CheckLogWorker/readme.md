@@ -50,10 +50,11 @@ There are many runners used for different purposes. And each of them requires di
 - Harddisk Remain Low
 - Harddisk Over-Growth
 - KPI Queue Runner
+- Large Retransmission Request Runner
 
 ## Harddisk Remain Low Runner
 
-Checks the harddisk space and fire warning when space is running low.
+Check the harddisk space and fire warning when space is running low.
 
 ````
 {
@@ -77,7 +78,7 @@ Checks the harddisk space and fire warning when space is running low.
 
 ## Harddisk Over-Growth
 
-Checks the harddisk growth speed and fire warning when space is used fast
+Check the harddisk growth speed and fire warning when space is used fast
 
 ````
 {
@@ -101,7 +102,7 @@ Checks the harddisk growth speed and fire warning when space is used fast
 
 ## KPI Queue Runner
 
-Checks our KPI.txt and raise error when queue is not processing fast enough
+Check our *kpi.txt* and raise error when queue is not processing fast enough
 
 ````
 {
@@ -127,7 +128,34 @@ Checks our KPI.txt and raise error when queue is not processing fast enough
 | IgnoreQueuePatterns | regex array | ["Q-CMDFDBSAVING-C", "Q-ITDBW\\."] | regex patterns for ignoring queue names |
 | WarnProportion | number | 0.01 | unprocessed proportion in queue triggering a warning |
 | WarnCount | number | 100 | unprocessed amount in queue which calming a warning |
-| ErrorProportion | number | 0.01 | unprocessed proportion in queue triggering an error |
-| ErrorCount | number | 100 | unprocessed amount in queue which calming an error |
+| ErrorProportion | number | 0.05 | unprocessed proportion in queue triggering an error |
+| ErrorCount | number | 500 | unprocessed amount in queue which calming an error |
 
 > Suggested to be called *every 15 minutes*
+
+This is extremely useful for MDF and OMDI.  
+Just remember to add DB queue into *IgnoreQueuePatterns* as DB items are meant to process slowly.
+
+## Large Retransmission Request Runner
+
+Check our *Retransmission.txt* and raise error when large re-transmission is triggered, indicating potential network failure
+
+````
+{
+  "Server": "https://localhost:44369",
+  "Identifier": "iAsia.Example.A",
+  "Runner": "LargeRetransmissionRequestRunner",
+  "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\Retransmission.txt",
+  "WarnCount": 100,
+  "ErrorCount": 1000
+}
+````
+
+| Field | Format | Example | Description |
+|-|-|-|-|
+| Runner | text | "LargeRetransmissionRequestRunner" | |
+| FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\Retransmission.txt" | *Retransmission.txt* path with date format tags |
+| WarnCount | number | 100 | re-transmission length which triggers a warning |
+| ErrorCount | number | 500 | re-transmission length which triggers an error |
+
+> Suggested to be called at least *every 5 minutes*
