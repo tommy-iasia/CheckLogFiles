@@ -49,7 +49,7 @@ namespace CheckLogServer.Pages.Log
             await System.IO.File.WriteAllTextAsync(fileName, Submit.Text);
 
             var lines = Logger.Read(Submit.Text);
-            var level = lines.GetLevel();
+            var newLevel = lines.GetLevel();
 
             var client = $"{HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}";
 
@@ -57,7 +57,7 @@ namespace CheckLogServer.Pages.Log
             {
                 Name = name,
                 Time = Submit.Time,
-                Level = level,
+                Level = newLevel,
                 FileName = fileName,
                 Deleted = false,
                 Client = client
@@ -69,7 +69,14 @@ namespace CheckLogServer.Pages.Log
                 .Include(t => t.LevelLog)
                 .FirstOrDefaultAsync();
 
-            if (node == null)
+            if (node != null)
+            {
+                if (node.Disabled)
+                {
+                    return NotFound();
+                }
+            }
+            else
             {
                 node = new Models.Node
                 {
@@ -81,9 +88,9 @@ namespace CheckLogServer.Pages.Log
 
             node.LogTime = DateTime.Now;
 
-            if (level > LogLevel.Info
-                && !node.Disabled
-                && level >= (node.LevelLog?.Level ?? LogLevel.Unknown))
+            var oldLevel = node.LevelLog?.Level ?? LogLevel.Unknown;
+            if (newLevel > LogLevel.Info
+                && newLevel >= oldLevel)
             {
                 node.LevelLog = row;
                 node.LevelTime = node.LogTime;
@@ -91,13 +98,12 @@ namespace CheckLogServer.Pages.Log
 
             await database.SaveChangesAsync();
 
-            var _ = nodeHub.NodeAsync(node);
+            _ = nodeHub.NodeAsync(node);
 
-            if (level > LogLevel.Info
-                && !node.Disabled
-                && level > (node.LevelLog?.Level ?? LogLevel.Unknown))
+            if (newLevel > LogLevel.Info
+                && newLevel > oldLevel)
             {
-                await telegramService.SendMessageAsync($"Node {node.Identitifer} is raised to {level} level");
+                _ = telegramService.SendMessageAsync($"*{newLevel}* `{node.Identitifer}`");
             }
 
             return Content($"{row.Name} created");

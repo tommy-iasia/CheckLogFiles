@@ -24,7 +24,7 @@ namespace CheckLogServer.Services
             var textEncoded = WebUtility.UrlEncode(text);
 
             var success = await telegrams
-                .SelectAsync(async t => await client.GetStringAsync(@$"https://api.telegram.org/bot{t.BotToken}/sendMessage?chat_id={t.ChannelId}&text={textEncoded}"))
+                .SelectAsync(async t => await client.GetStringAsync(@$"https://api.telegram.org/bot{t.BotToken}/sendMessage?chat_id={t.ChannelId}&text={textEncoded}&parse_mode=MarkdownV2"))
                 .WhereAsync(t => !string.IsNullOrWhiteSpace(t))
                 .FirstOrDefaultAsync(t => t.Contains("\"ok\":true"));
 
