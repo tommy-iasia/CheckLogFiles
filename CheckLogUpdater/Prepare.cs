@@ -16,7 +16,7 @@ namespace CheckLogUpdater
             var configure = await Configure.LoadAsync();
 
             using var client = new HttpClient();
-            var updates = await client.GetFromJsonAsync<Update[]>($"{configure.Address}/Update/After?lastId={configure.Version}");
+            var updates = await client.GetFromJsonAsync<Update[]>($"{configure.Address}/Update/After?identifier={configure.Identifier}&version={configure.Version}");
 
             if (!updates.Any())
             {

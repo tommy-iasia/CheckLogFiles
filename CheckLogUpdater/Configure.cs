@@ -7,9 +7,11 @@ namespace CheckLogUpdater
     public class Configure
     {
         public string Address { get; set; }
+
+        public string Identifier { get; set; }
         public string Version { get; set; }
 
-        private const string FilePath = nameof(CheckLogUpdater) + ".config";
+        private const string FilePath = nameof(CheckLogUpdater) + ".json";
         public static async Task<Configure> LoadAsync()
         {
             var json = await File.ReadAllTextAsync(FilePath);

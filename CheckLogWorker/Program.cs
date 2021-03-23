@@ -19,7 +19,7 @@ namespace CheckLogWorker
         public string Server { get; set; }
         public bool SkipSendInfo { get; set; }
 
-        static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             if (!args.Any())
             {

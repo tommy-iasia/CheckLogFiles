@@ -1,11 +1,12 @@
 /CheckLogServer/Data
 /CheckLogServer/bin
 /CheckLogServer/obj
-/CheckLogServer/*.user
 /CheckLogWorker/obj
 /CheckLogWorker/bin
 /.vs
+*.user
+*.db
 /CheckLogServer/wwwroot/lib
 /CheckLogUpdater/obj
 /CheckLogUpdater/bin
-/CheckLogServer/*.db
+/CheckLogServer/.config

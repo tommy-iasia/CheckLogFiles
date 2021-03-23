@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <ApplicationIcon>server.ico</ApplicationIcon>
+    <UserSecretsId>fd78b44c-c910-449b-8e32-775752d88acb</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

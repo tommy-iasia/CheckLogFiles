@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckLogServer", "CheckLogS
 		{FEBE892B-436D-4E5A-B6C1-BBE05CE46584} = {FEBE892B-436D-4E5A-B6C1-BBE05CE46584}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckLogUpdater", "CheckLogUpdater\CheckLogUpdater.csproj", "{0994C715-E76E-4837-8A0B-914E9A2D9337}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckLogUpdater", "CheckLogUpdater\CheckLogUpdater.csproj", "{0994C715-E76E-4837-8A0B-914E9A2D9337}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
