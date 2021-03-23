@@ -136,7 +136,7 @@ Check our *kpi.txt* and raise error when queue is not processing fast enough
   "Server": "http://localhost:44369",
   "Identifier": "iAsia.Example.A",
   "Runner": "KpiQueueRunner",
-  "FilePattern": "C:\\iAsia\\iTrade\\iAsiaLogs\\<yyyyMMdd>\\kpi.txt",
+  "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\kpi.txt",
   "IgnoreQueuePatterns": [
     "Q-CMDFDBSAVING-C",
     "Q-ITDBW\\."
