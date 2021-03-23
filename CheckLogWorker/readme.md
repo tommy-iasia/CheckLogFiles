@@ -10,7 +10,7 @@ Configure.json
 
 ````
 {
-  "Server": "https://localhost:44369",
+  "Server": "http://localhost:44369",
   "Identifier": "iAsia.Pikachu",
   "Runner": "HarddiskRemainLow",
   "Drive": "C:\\",
@@ -31,7 +31,7 @@ They define the basic of program flow
 
 | Field | Format | Example | Description |
 |-|-|-|-|
-| Server | url | "https://check-log-server.iasia.com:44369" | the address of server for submitting result |
+| Server | url | "http://check-log-server.iasia.com:44369" | the address of server for submitting result |
 | Identifier | text | "iAsia.Example.A" | identifier in server identifying this machine uniquely |
 | Runner | text | "HarddiskRemainLow" | the name of runner to be run in this invocation |
 
@@ -63,7 +63,7 @@ Check the harddisk space and fire warning when space is running low.
 
 ````
 {
-  "Server": "https://localhost:44369",
+  "Server": "http://localhost:44369",
   "Identifier": "iAsia.Example.A",
   "Runner": "HarddiskRemainLowRunner",
   "Drive": "C:\\",
@@ -87,7 +87,7 @@ Check the harddisk growth speed and fire warning when space is used fast
 
 ````
 {
-  "Server": "https://localhost:44369",
+  "Server": "http://localhost:44369",
   "Identifier": "iAsia.Example.A",
   "Runner": "HarddiskOverGrowthRunner",
   "Drive": "C:\\",
@@ -109,7 +109,7 @@ Check the harddisk growth speed and fire warning when space is used fast
 
 ````
 {
-  "Server": "https://localhost:44369",
+  "Server": "http://localhost:44369",
   "Identifier": "iAsia.Example.A",
   "Runner": "OversizeDailyDirectoryRunner",
   "PathPattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>",
@@ -133,7 +133,7 @@ Check our *kpi.txt* and raise error when queue is not processing fast enough
 
 ````
 {
-  "Server": "https://localhost:44369",
+  "Server": "http://localhost:44369",
   "Identifier": "iAsia.Example.A",
   "Runner": "KpiQueueRunner",
   "FilePattern": "C:\\iAsia\\iTrade\\iAsiaLogs\\<yyyyMMdd>\\kpi.txt",
@@ -167,7 +167,7 @@ Just remember to add DB queue into *IgnoreQueuePatterns* as DB items are meant t
 
 ````
 {
-  "Server": "https://localhost:44369",
+  "Server": "http://localhost:44369",
   "Identifier": "iAsia.Example.A",
   "Runner": "NetWarnOverflowRunner",
   "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\NetWarnLog.txt",
@@ -196,7 +196,7 @@ Just remember to add DB queue into *IgnoreQueuePatterns* as DB items are meant t
 
 ````
 {
-  "Server": "https://localhost:44369",
+  "Server": "http://localhost:44369",
   "Identifier": "iAsia.Example.A",
   "Runner": "NetErrorOverflowRunner",
   "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\NetErrorLog.txt",
@@ -223,7 +223,7 @@ Check our *Retransmission.txt* and raise error when large re-transmission is tri
 
 ````
 {
-  "Server": "https://localhost:44369",
+  "Server": "http://localhost:44369",
   "Identifier": "iAsia.Example.A",
   "Runner": "LargeRetransmissionRequestRunner",
   "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\Retransmission.txt",
@@ -247,7 +247,7 @@ Check our *Retransmission.txt* and raise error when re-transmission is rejected 
 
 ````
 {
-  "Server": "https://localhost:44369",
+  "Server": "http://localhost:44369",
   "Identifier": "iAsia.Example.A",
   "Runner": "RetransmissionRejectedRunner",
   "FilePattern": "C:\\Tommy\\tasks\\210316 CheckLogFiles\\iAsiaLogs\\<yyyyMMdd>\\Retransmission.txt"
