@@ -1,5 +1,7 @@
 # CheckLogFiles
 
+Executables can be downloaded in [publish folder](https://github.com/tommy-iasia/CheckLogFiles/tree/master/publish)
+
 ![image](https://github.com/tommy-iasia/CheckLogFiles/raw/master/CheckLogServer/previews/21032204-map.png?raw=true)
 
 This project consists of three components
