@@ -259,7 +259,7 @@ Check our *Retransmission.txt* and raise error when re-transmission is rejected 
 | Runner | text | "RetransmissionRejectedRunner" | |
 | FilePattern | tag path | "C:\\*\<yyyyMMdd\>*\\Retransmission.txt" | *Retransmission.txt* path with date format tags |
 
-> Suggested to be called at least *every 3 minutes*
+> Suggested to be called at least *every 5 minutes*
 
 # Scheduling
 
