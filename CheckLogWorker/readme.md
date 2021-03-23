@@ -67,8 +67,8 @@ Check the harddisk space and fire warning when space is running low.
   "Identifier": "iAsia.Example.A",
   "Runner": "HarddiskRemainLowRunner",
   "Drive": "C:\\",
-  "WarnSize": "10GB",
-  "ErrorSize": "500MB"
+  "WarnSize": "20GB",
+  "ErrorSize": "5GB"
 }
 ````
 
