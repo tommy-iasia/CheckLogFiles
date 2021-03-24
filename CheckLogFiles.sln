@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckLogServer", "CheckLogS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckLogUpdater", "CheckLogUpdater\CheckLogUpdater.csproj", "{0994C715-E76E-4837-8A0B-914E9A2D9337}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckLogRunner", "CheckLogRunner\CheckLogRunner.csproj", "{4E54CD23-E03A-4B9E-BEC7-C4AA14749451}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{0994C715-E76E-4837-8A0B-914E9A2D9337}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0994C715-E76E-4837-8A0B-914E9A2D9337}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0994C715-E76E-4837-8A0B-914E9A2D9337}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E54CD23-E03A-4B9E-BEC7-C4AA14749451}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E54CD23-E03A-4B9E-BEC7-C4AA14749451}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E54CD23-E03A-4B9E-BEC7-C4AA14749451}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E54CD23-E03A-4B9E-BEC7-C4AA14749451}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

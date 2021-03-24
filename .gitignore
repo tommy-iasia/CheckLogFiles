@@ -10,3 +10,5 @@
 /CheckLogUpdater/obj
 /CheckLogUpdater/bin
 /CheckLogServer/.config
+/CheckLogRunner/bin
+/CheckLogRunner/obj
