@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using CheckLogUtility.Logging;
+using CheckLogUtility.Text;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
@@ -43,9 +46,11 @@ namespace CheckLogWorker.Runners
 
         public string WarnSize { get; set; }
         public string ErrorSize { get; set; }
-        protected override async Task RunAsync(DriveInfo drive, Logger logger)
+        protected override async Task RunAsync(DriveInfo drive, Logger logger, CancellationToken cancellationToken)
         {
             await logger.InfoAsync($"{drive.AvailableFreeSpace / 1024 / 1024 / 1024}GB/{drive.AvailableFreeSpace}B is free in {Drive}");
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var criticalValue = UnitText.ParseSize(ErrorSize);
             if (drive.AvailableFreeSpace <= criticalValue)

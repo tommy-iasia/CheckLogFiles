@@ -1,6 +1,12 @@
-﻿using System;
+﻿using CheckLogUtility.Linq;
+using CheckLogUtility.Logging;
+using CheckLogUtility.Text;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
@@ -47,25 +53,12 @@ namespace CheckLogWorker.Runners
         public string PathPattern { get; set; }
         public string WarnSize { get; set; }
         public string ErrorSize { get; set; }
-        public async Task RunAsync(Logger logger)
+        public async Task RunAsync(Logger logger, CancellationToken cancellationToken)
         {
             var directoryPath = DailyFileRunner.TryTimeReplace(PathPattern, DateTime.Now);
             await logger.InfoAsync($"Folder path {directoryPath} for today");
 
-            const int fileCountLimit = 1001;
-            var files = Directory.EnumerateFiles(directoryPath).Take(fileCountLimit).ToArray();
-            if (files.Length >= fileCountLimit)
-            {
-                await logger.InfoAsync($"Cannot check folder with more than {fileCountLimit - 1} files.");
-            }
-
-            if (!Directory.Exists(directoryPath))
-            {
-                await logger.InfoAsync($"Folder does not exists");
-                return;
-            }
-
-            var fileInfos = files.Select(t => new FileInfo(t)).ToArray();
+            var fileInfos = await GetFileInfosAsync(directoryPath, logger, cancellationToken).ToArrayAsync();
             var directorySize = fileInfos.Sum(t => t.Length);
             await logger.InfoAsync($"Folder is of {directorySize}B");
 
@@ -90,6 +83,31 @@ namespace CheckLogWorker.Runners
             foreach (var file in largeFiles)
             {
                 await logger.InfoAsync($"{file} is of {file.Length}B/{UnitText.ToSize(file.Length)}B");
+            }
+        }
+        private static async IAsyncEnumerable<FileInfo> GetFileInfosAsync(string directoryPath, Logger logger, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            if (!Directory.Exists(directoryPath))
+            {
+                await logger.InfoAsync($"Folder does not exists");
+                yield break;
+            }
+
+            const int fileCountLimit = 1001;
+            var count = 0;
+
+            var files = Directory.EnumerateFiles(directoryPath);
+            foreach (var file in files)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (++count >= fileCountLimit)
+                {
+                    await logger.ErrorAsync($"Cannot check folder with more than {fileCountLimit - 1} files.");
+                    yield break;
+                }
+
+                yield return new FileInfo(file);
             }
         }
     }

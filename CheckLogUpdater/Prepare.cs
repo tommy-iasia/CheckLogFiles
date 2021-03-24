@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CheckLogUtility.Logging;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace CheckLogUpdater
 {
     public static class Prepare
     {
-        public static async Task RunAsync()
+        public static async Task RunAsync(Logger logger)
         {
             var configure = await Configure.LoadAsync();
 
@@ -20,32 +21,32 @@ namespace CheckLogUpdater
 
             if (!updates.Any())
             {
-                Console.WriteLine("It is the most updated version now");
+                await logger.InfoAsync("It is the most updated version now");
                 return;
             }
 
             var update = updates.OrderBy(t => t.Version).First();
-            Console.WriteLine($"Update {update.Version} of {update.Id} will be applied...");
+            await logger.InfoAsync($"Update {update.Version} of {update.Id} will be applied...");
 
-            await DownloadAsync(configure.Address, update);
+            await DownloadAsync(configure.Address, update, logger);
 
-            RunProcess(update);
+            await RunProcessAsync(update, logger);
         }
 
         public static string GetDirectory(string version) => Path.Combine("Update", version);
-        private static async Task DownloadAsync(string server, Update update)
+        private static async Task DownloadAsync(string server, Update update, Logger logger)
         {
             using var client = new HttpClient();
             var uri = $"{server}/Update/Download?id={update.Id}";
             var names = await client.GetFromJsonAsync<string[]>(uri);
 
-            Console.WriteLine($"{names.Length} files to be downloaded...");
+            await logger.InfoAsync($"{names.Length} files to be downloaded...");
 
             var updateDirectory = GetDirectory(update.Version);
 
             foreach (var name in names)
             {
-                Console.WriteLine($"Download {name}");
+                await logger.InfoAsync($"Download {name}");
                 var bytes = await client.GetByteArrayAsync($"{uri}&name={HttpUtility.UrlEncode(name)}");
 
                 var path = Path.Combine(updateDirectory, name);
@@ -56,24 +57,24 @@ namespace CheckLogUpdater
                 await File.WriteAllBytesAsync(path, bytes);
             }
 
-            Console.WriteLine("Place files...");
+            await logger.InfoAsync("Place files...");
 
             foreach (var name in names)
             {
                 var path = Path.Combine(updateDirectory, name);
 
-                Console.WriteLine($"Place {name}");
+                await logger.InfoAsync($"Place {name}");
                 File.Copy(path, name);
             }
         }
 
-        private static void RunProcess(Update update)
+        private static async Task RunProcessAsync(Update update, Logger logger)
         {
             var argument = $"{nameof(Continue)} {update.Version}";
-            Console.WriteLine($"Run command: {update.Command} {argument}");
+            await logger.InfoAsync($"Run command: {update.Command} {argument}");
 
             var workingDirectory = Path.GetFullPath(".");
-            Console.WriteLine($"Working directory: {workingDirectory}");
+            await logger.InfoAsync($"Working directory: {workingDirectory}");
 
             var processInfo = new ProcessStartInfo(update.Command, argument)
             {

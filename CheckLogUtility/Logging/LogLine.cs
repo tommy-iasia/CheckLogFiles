@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CheckLogWorker
+namespace CheckLogUtility.Logging
 {
     public class LogLine
     {

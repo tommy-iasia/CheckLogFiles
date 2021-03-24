@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CheckLogServer.Hubs;
 using CheckLogServer.Models;
 using CheckLogServer.Services;
+using CheckLogUtility.Logging;
 using CheckLogWorker;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

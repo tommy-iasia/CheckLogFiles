@@ -1,9 +1,11 @@
-﻿using System;
+﻿using CheckLogUtility.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
@@ -13,7 +15,7 @@ namespace CheckLogWorker.Runners
         public string Identifier { get; set; }
         public string Runner { get; set; }
 
-        protected override async Task RunAsync(string filePath, Logger logger)
+        protected override async Task RunAsync(string filePath, Logger logger, CancellationToken cancellationToken)
         {
             if (!File.Exists(filePath))
             {
@@ -23,9 +25,9 @@ namespace CheckLogWorker.Runners
 
             var lines = NextLinesAsync(filePath);
 
-            await RunAsync(filePath, lines, logger);
+            await RunAsync(filePath, lines, logger, cancellationToken);
         }
-        protected abstract Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger);
+        protected abstract Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger, CancellationToken cancellationToken);
 
         protected IAsyncEnumerable<string> NextLinesAsync(string filePath)
         {

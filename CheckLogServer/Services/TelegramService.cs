@@ -1,5 +1,5 @@
 ﻿using CheckLogServer.Models;
-using CheckLogWorker.Enumerable;
+using CheckLogUtility.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Net.Http;

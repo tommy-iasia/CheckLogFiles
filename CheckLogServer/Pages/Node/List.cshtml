@@ -29,7 +29,7 @@
     <tbody>
         @{
             var ordered = Model.Nodes
-                .OrderByDescending(t => t.LevelLog?.Level ?? CheckLogWorker.LogLevel.Unknown)
+                .OrderByDescending(t => t.LevelLog?.Level ?? CheckLogUtility.Logging.LogLevel.Unknown)
                 .ThenBy(t => t.Identitifer);
         }
         @foreach (var row in ordered)

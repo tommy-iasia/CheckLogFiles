@@ -16,7 +16,7 @@
 
         <tr>
             <td>@nameof(Model.Row.Level)</td>
-            <td class="@(Model.Row.Level >= CheckLogWorker.LogLevel.Error ? "red": string.Empty)">
+            <td class="@(Model.Row.Level >= CheckLogUtility.Logging.LogLevel.Error ? "red": string.Empty)">
             @Model.Row.Level
             </td>
         </tr>

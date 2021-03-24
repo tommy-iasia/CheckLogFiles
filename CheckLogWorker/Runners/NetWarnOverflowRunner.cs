@@ -1,8 +1,11 @@
-﻿using System;
+﻿using CheckLogUtility.Logging;
+using CheckLogUtility.Text;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
@@ -26,9 +29,9 @@ namespace CheckLogWorker.Runners
         }
 
         protected override Regex LineRegex => new(@"\[(?<time>[\d/ :.]+)\] \[NetClient\] \[appendWriteBuffer \| Write Buffer Overflow \| buffLen: \d+ \| writeBuff: java\.nio\.HeapByteBuffer\[pos=\d+ lim=\d+ cap=\d+\] \| (?<client>[\d.:]+)\]");
-        protected override async Task RunAsync(IEnumerable<NetOverflowRecord> overflows, string filePath, Logger logger)
+        protected override async Task RunAsync(IEnumerable<NetOverflowRecord> overflows, string filePath, Logger logger, CancellationToken cancellationToken)
         {
-            var serverPorts = await GetServerPortsAsync(filePath);
+            var serverPorts = await GetServerPortsAsync(filePath, cancellationToken);
 
             var ignoreTime = UnitText.ParseSpan(IgnoreSpan);
 
@@ -64,10 +67,10 @@ namespace CheckLogWorker.Runners
 
         private const string WarnLogName = "NetWarnLog.txt";
         private const string InfoLogName = "NetInfoLog.txt";
-        private static async Task<Dictionary<string, int>> GetServerPortsAsync(string warnPath)
+        private static async Task<Dictionary<string, int>> GetServerPortsAsync(string warnPath, CancellationToken cancellationToken)
         {
             var filePath = warnPath.Replace(WarnLogName, InfoLogName);
-            var lines = await File.ReadAllLinesAsync(filePath);
+            var lines = await File.ReadAllLinesAsync(filePath, cancellationToken);
 
             var regex = new Regex(@"\[validate \| server : [\d.]+:(?<port>\d+) \| client : (?<client>[\d.:]+) \|");
             return lines.Select(t => regex.Match(t))

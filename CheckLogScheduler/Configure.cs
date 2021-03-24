@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace CheckLogRunner
+namespace CheckLogScheduler
 {
     public class Configure
     {

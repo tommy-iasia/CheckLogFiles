@@ -1,8 +1,10 @@
-﻿using CheckLogWorker.Enumerable;
+﻿using CheckLogUtility.Linq;
+using CheckLogUtility.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
@@ -71,7 +73,7 @@ namespace CheckLogWorker.Runners
             return true;
         }
 
-        protected override async Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger)
+        protected override async Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger, CancellationToken _)
         {
             var records = await GetQueuesRecordsAsync(lines);
             if (!records.Any())

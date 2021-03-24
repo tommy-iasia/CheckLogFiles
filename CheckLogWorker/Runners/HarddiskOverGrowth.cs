@@ -1,7 +1,10 @@
-﻿using System;
+﻿using CheckLogUtility.Logging;
+using CheckLogUtility.Text;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
@@ -44,7 +47,7 @@ namespace CheckLogWorker.Runners
             return true;
         }
 
-        protected override async Task RunAsync(DriveInfo drive, Logger logger)
+        protected override async Task RunAsync(DriveInfo drive, Logger logger, CancellationToken cancellationToken)
         {
             var oldRecord = await FindRecordAsync();
 
@@ -74,6 +77,8 @@ namespace CheckLogWorker.Runners
                 await logger.WarnAsync($"Skip checking");
                 return;
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             _ = TryParseRate(ErrorRate, out var errorRate);
             if (realSize * errorRate.time.TotalMilliseconds > errorRate.size * realTime.TotalMilliseconds)

@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CheckLogServer.Models;
-using CheckLogWorker;
+using CheckLogUtility.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;

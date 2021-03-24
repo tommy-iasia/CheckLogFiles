@@ -1,9 +1,11 @@
-﻿using CheckLogWorker.Enumerable;
+﻿using CheckLogUtility.Linq;
+using CheckLogUtility.Logging;
+using CheckLogUtility.Text;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
@@ -39,7 +41,7 @@ namespace CheckLogWorker.Runners
         }
 
         protected abstract Regex LineRegex { get; }
-        protected override async Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger)
+        protected override async Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger, CancellationToken cancellationToken)
         {
             var regex = LineRegex;
 
@@ -47,6 +49,7 @@ namespace CheckLogWorker.Runners
                 .WhereAsync(t => t.Success)
                 .SelectAsync(t => (time: DateTime.TryParse(t.Groups["time"].Value, out var time) ? time : default, client: t.Groups["client"].Value))
                 .WhereAsync(t => t.time != default)
+                .WithCancellation(cancellationToken)
                 .ToArrayAsync();
 
             var overflows = logs.GroupBy(t => t.client, t => t.time)
@@ -66,9 +69,9 @@ namespace CheckLogWorker.Runners
                 return;
             }
 
-            await RunAsync(overflows, filePath, logger);
+            await RunAsync(overflows, filePath, logger, cancellationToken);
         }
-        protected abstract Task RunAsync(IEnumerable<NetOverflowRecord> overflows, string filePath, Logger logger);
+        protected abstract Task RunAsync(IEnumerable<NetOverflowRecord> overflows, string filePath, Logger logger, CancellationToken cancellationToken);
 
         public int IgnoreCount { get; set; }
         public string IgnoreSpan { get; set; }

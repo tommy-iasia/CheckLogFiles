@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using CheckLogUtility.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CheckLogWorker
 {
@@ -6,6 +8,6 @@ namespace CheckLogWorker
     {
         Task<bool> PrepareAsync(Logger logger);
 
-        Task RunAsync(Logger logger);
+        Task RunAsync(Logger logger, CancellationToken cancellationToken);
     }
 }

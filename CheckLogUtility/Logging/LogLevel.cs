@@ -1,4 +1,4 @@
-﻿namespace CheckLogWorker
+﻿namespace CheckLogUtility.Logging
 {
     public enum LogLevel
     {

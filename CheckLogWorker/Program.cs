@@ -1,4 +1,6 @@
-﻿using CheckLogWorker.Runners;
+﻿using CheckLogUtility.Logging;
+using CheckLogUtility.Randomize;
+using CheckLogWorker.Runners;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker
@@ -19,11 +22,14 @@ namespace CheckLogWorker
         public string Server { get; set; }
         public bool SkipSendInfo { get; set; }
 
-        public static async Task Main(string[] args)
+        public static async Task Main(string[] args) => await RunAsync(args, CancellationToken.None);
+        public static async Task RunAsync(string[] args, CancellationToken cancellationToken)
         {
+            var logger = new Logger();
+
             if (!args.Any())
             {
-                Console.Error.WriteLine("No configure is provided.");
+                await logger.ErrorAsync("No configure is provided.");
                 return;
             }
 
@@ -32,27 +38,27 @@ namespace CheckLogWorker
             var program = JsonSerializer.Deserialize<Program>(json);
             if (string.IsNullOrWhiteSpace(program.Runner))
             {
-                Console.Error.WriteLine("Runner is not provided.");
+                await logger.ErrorAsync("Runner is not provided.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(program.Identifier))
             {
-                Console.Error.WriteLine("Identifier is not provided.");
+                await logger.ErrorAsync("Identifier is not provided.");
                 return;
             }
 
-            var random = new Random();
             var logName = new LogName
             {
                 Identifier = program.Identifier,
                 Runner = program.Runner,
                 Time = DateTime.Now,
-                Random = random.Next(9999)
+                Random = RandomUtility.Next(9999)
             };
             
-            var logger = new Logger($"{logName}.log");
             await logger.InfoAsync($"Id: {logName}");
+
+            await logger.SetFileAsync($"{logName}.log");
 
             await logger.InfoAsync($"Configure: {json}");
 
@@ -81,7 +87,7 @@ namespace CheckLogWorker
 
             try
             {
-                await runner.RunAsync(logger);
+                await runner.RunAsync(logger, cancellationToken);
             }
             catch (Exception e)
             {
@@ -94,7 +100,7 @@ namespace CheckLogWorker
                 await logger.InfoAsync("Send");
                 try
                 {
-                    await SendAsync(logName, program.Server, logger);
+                    await SendAsync(logName, program.Server, logger, cancellationToken);
                 }
                 catch (Exception e)
                 {
@@ -108,6 +114,7 @@ namespace CheckLogWorker
 
             await logger.InfoAsync("End");
         }
+
         private static async Task<string> GetConfigureJsonAsync(string[] filePaths)
         {
             var outputDictionary = new Dictionary<string, object>();
@@ -126,7 +133,7 @@ namespace CheckLogWorker
             return JsonSerializer.Serialize(outputDictionary);
         }
 
-        private static async Task SendAsync(LogName name, string server, Logger logger)
+        private static async Task SendAsync(LogName name, string server, Logger logger, CancellationToken cancellationToken)
         {
             var uri = $"{server.TrimEnd('/')}/Log/Create";
 
@@ -140,7 +147,7 @@ namespace CheckLogWorker
             };
 
             using var client = new HttpClient();
-            var message = await client.PostAsJsonAsync(uri, submit);
+            var message = await client.PostAsJsonAsync(uri, submit, cancellationToken);
 
             if (message.StatusCode != HttpStatusCode.OK)
             {

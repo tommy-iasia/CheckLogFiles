@@ -6,4 +6,8 @@
     <ApplicationIcon>updater.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CheckLogUtility\CheckLogUtility.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,5 @@
-﻿using CheckLogWorker;
+﻿using CheckLogUtility.Logging;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace CheckLogServer.Models
 {

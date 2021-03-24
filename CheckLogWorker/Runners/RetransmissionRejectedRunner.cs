@@ -1,7 +1,9 @@
-﻿using CheckLogWorker.Enumerable;
+﻿using CheckLogUtility.Linq;
+using CheckLogUtility.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
@@ -24,7 +26,7 @@ namespace CheckLogWorker.Runners
             return true;
         }
 
-        protected override async Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger)
+        protected override async Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger, CancellationToken cancellationToken)
         {
             var regex = new Regex(@"RetransmissionTask\] \[Retransmission Response \(\d+\). Retrans Status=2 Channel=(?<channel>\d+) BeginSeq=(?<begin>\d+) EndSeq=(?<end>\d+)\]");
 
@@ -35,6 +37,7 @@ namespace CheckLogWorker.Runners
                     begin: int.TryParse(t.Groups["begin"].Value, out var begin) ? begin : -1,
                     end: int.TryParse(t.Groups["end"].Value, out var end) ? end : -1))
                 .WhereAsync(t => t.channel >= 0 && t.begin >= 0 && t.end >= 0)
+                .WithCancellation(cancellationToken)
                 .ToArrayAsync();
 
             await logger.InfoAsync($"{rejects.Length} re-transmissions are rejected");
@@ -46,6 +49,8 @@ namespace CheckLogWorker.Runners
 
             foreach (var (channel, begin, end) in rejects)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 await logger.ErrorAsync($"Re-transmission in channel {channel} from {begin} to {end} is rejected");
             }
         }

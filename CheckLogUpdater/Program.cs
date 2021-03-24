@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CheckLogUtility.Logging;
+using CheckLogUtility.Randomize;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,33 +10,37 @@ namespace CheckLogUpdater
     {
         static async Task Main(string[] args)
         {
-            Console.WriteLine("Start");
+            var logger = new Logger();
+            
+            await logger.InfoAsync("Start");
 
             try
             {
-                await RunAsync(args);
+                await logger.SetFileAsync($"{nameof(CheckLogUpdater)}.{DateTime.Now:yyMMddHHmmss}.{RandomUtility.Next(9999)}.log");
+
+                await RunAsync(args, logger);
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine(e);
+                await logger.ErrorAsync(e);
             }
 
-            Console.WriteLine("End");
+            await logger.InfoAsync("End");
         }
 
-        private static async Task RunAsync(string[] args)
+        private static async Task RunAsync(string[] args, Logger logger)
         {
             var action = args.First();
             switch (action)
             {
                 case nameof(Prepare):
-                    await Prepare.RunAsync();
+                    await Prepare.RunAsync(logger);
                     break;
 
                 case nameof(Continue):
                     var arguments = args.Skip(1);
 
-                    await Continue.RunAsync(arguments);
+                    await Continue.RunAsync(arguments, logger);
                     break;
 
                 default:

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace CheckLogWorker.Enumerable
+namespace CheckLogUtility.Linq
 {
     public static class AsyncEnumerableExtensions
     {
@@ -74,7 +75,25 @@ namespace CheckLogWorker.Enumerable
 
             return list.ToArray();
         }
+        public static async Task<T[]> ToArrayAsync<T>(this ConfiguredCancelableAsyncEnumerable<T> enumerable)
+        {
+            var list = await enumerable.ToListAsync();
+
+            return list.ToArray();
+        }
+
         public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> enumerable)
+        {
+            var list = new List<T>();
+
+            await foreach (var item in enumerable)
+            {
+                list.Add(item);
+            }
+
+            return list;
+        }
+        public static async Task<List<T>> ToListAsync<T>(this ConfiguredCancelableAsyncEnumerable<T> enumerable)
         {
             var list = new List<T>();
 

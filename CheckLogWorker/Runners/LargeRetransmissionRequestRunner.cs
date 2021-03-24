@@ -1,7 +1,9 @@
-﻿using CheckLogWorker.Enumerable;
+﻿using CheckLogUtility.Linq;
+using CheckLogUtility.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
@@ -43,7 +45,7 @@ namespace CheckLogWorker.Runners
 
         public int WarnCount { get; set; }
         public int ErrorCount { get; set; }
-        protected override async Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger)
+        protected override async Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger, CancellationToken cancellationToken)
         {
             var regex = new Regex(@"RetransmissionManager\] \[\[(?<channel>\d+)\]SEND Retansmission From=(?<from>\d+) To=(?<to>\d+)\]");
 
@@ -54,6 +56,7 @@ namespace CheckLogWorker.Runners
                     from: int.TryParse(t.Groups["from"].Value, out var from) ? from : -1,
                     to: int.TryParse(t.Groups["to"].Value, out var to) ? to : -1))
                 .WhereAsync(t => t.channel >= 0 && t.from >= 0 && t.to >= 0)
+                .WithCancellation(cancellationToken)
                 .ToArrayAsync();
 
             await logger.InfoAsync($"{requests.Length} re-transmissions are requested");
@@ -65,6 +68,8 @@ namespace CheckLogWorker.Runners
 
             foreach (var (channel, from, to) in requests)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var count = to - from + 1;
                 await logger.InfoAsync($"Re-transmission of {count} sequences from {from} to {to} in channel {channel}");
 

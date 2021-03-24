@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using CheckLogUtility.Logging;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
@@ -18,7 +20,7 @@ namespace CheckLogWorker.Runners
         }
 
         public string Drive { get; set; }
-        public async Task RunAsync(Logger logger)
+        public async Task RunAsync(Logger logger, CancellationToken cancellationToken)
         {
             var drives = DriveInfo.GetDrives();
 
@@ -31,8 +33,8 @@ namespace CheckLogWorker.Runners
                 await logger.InfoAsync($"Only {string.Join(", ", names)} are available.");
             }
 
-            await RunAsync(drive, logger);
+            await RunAsync(drive, logger, cancellationToken);
         }
-        protected abstract Task RunAsync(DriveInfo drive, Logger logger);
+        protected abstract Task RunAsync(DriveInfo drive, Logger logger, CancellationToken cancellationToken);
     }
 }

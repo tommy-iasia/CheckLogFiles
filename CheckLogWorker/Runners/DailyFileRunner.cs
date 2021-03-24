@@ -1,5 +1,7 @@
-﻿using System;
+﻿using CheckLogUtility.Logging;
+using System;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogWorker.Runners
@@ -17,15 +19,15 @@ namespace CheckLogWorker.Runners
             return true;
         }
 
-        public async Task RunAsync(Logger logger)
+        public async Task RunAsync(Logger logger, CancellationToken cancellationToken)
         {
             var filePath = TryTimeReplace(FilePattern, DateTime.Now);
 
             await logger.InfoAsync($"File path {filePath} for today");
 
-            await RunAsync(filePath, logger);
+            await RunAsync(filePath, logger, cancellationToken);
         }
-        protected abstract Task RunAsync(string filePath, Logger logger);
+        protected abstract Task RunAsync(string filePath, Logger logger, CancellationToken cancellationToken);
 
         public string FilePattern { get; set; }
         public static string TryTimeReplace(string pattern, DateTime time)

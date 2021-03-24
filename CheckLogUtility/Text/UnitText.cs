@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace CheckLogWorker.Runners
+namespace CheckLogUtility.Text
 {
     public static class UnitText
     {
