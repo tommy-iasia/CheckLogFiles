@@ -279,7 +279,7 @@ Continue with the [server setting](https://github.com/tommy-iasia/CheckLogFiles/
 
 Calling with first parameter being *Schedule*, the program enters schedule mode.
 
-    CheckLogWorker.exe Schedule CheckLogWorker.Scheduler.json
+    CheckLogWorker.exe Schedule Schedule.json
 
 ````
 [
