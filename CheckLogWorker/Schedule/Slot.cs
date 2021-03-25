@@ -12,27 +12,6 @@ namespace CheckLogWorker.Schedule
         public void Next() => NextTime = TimeExpression.Next(NextTime);
 
         public DateTime NextTime { get; set; }
-        public async Task WaitAsync()
-        {
-            while (true)
-            {
-                var now = DateTime.Now;
-                if (now >= NextTime)
-                {
-                    return;
-                }
-
-                var thisSpan = NextTime - now;
-                if (thisSpan.TotalSeconds > 5)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(5));
-                }
-                else
-                {
-                    await Task.Delay(thisSpan);
-                }
-            }
-        }
 
         public string[] Arguments { get; set; }
         public async Task RunAsync(Logger logger)

@@ -59,10 +59,10 @@ namespace CheckLogWorker.Schedule
         {
             while (true)
             {
-                var (valid, guid) = await singleton.ValidateAsync();
-                if (!valid)
+                var (firstValid, firstGuid) = await singleton.ValidateAsync();
+                if (!firstValid)
                 {
-                    await logger.InfoAsync($"Overriding by new scheduler {guid}");
+                    await logger.InfoAsync($"Overriding by new scheduler {firstGuid}");
                     break;
                 }
 
@@ -73,7 +73,25 @@ namespace CheckLogWorker.Schedule
                 var totalSpan = slot.NextTime - DateTime.Now;
                 await logger.InfoAsync($"Wait for {totalSpan.TotalSeconds:#,##0}s");
 
-                await slot.WaitAsync();
+                while (true)
+                {
+                    var (secondValid, secondGuid) = await singleton.ValidateAsync();
+                    if (!secondValid)
+                    {
+                        await logger.InfoAsync($"Overriding by new scheduler {secondGuid}");
+                        break;
+                    }
+
+                    var waitTime = slot.NextTime - DateTime.Now;
+                    if (waitTime <= TimeSpan.Zero)
+                    {
+                        break;
+                    }
+
+                    await Task.Delay(
+                        waitTime.TotalSeconds <= 5 ? waitTime
+                        : TimeSpan.FromSeconds(5));
+                }
 
                 Console.WriteLine();
 

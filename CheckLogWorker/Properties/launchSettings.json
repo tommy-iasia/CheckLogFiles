@@ -2,7 +2,7 @@
   "profiles": {
     "CheckLogWorker": {
       "commandName": "Project",
-      "commandLineArgs": "Schedule Scheduler.json"
+      "commandLineArgs": "Schedule CheckLogWorker.Scheduler.json"
     }
   }
 }
