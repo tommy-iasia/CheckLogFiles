@@ -3,10 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+    <ApplicationIcon>scheduler.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CheckLogWorker\CheckLogWorker.csproj" />
+    <ProjectReference Include="..\CheckLogUtility\CheckLogUtility.csproj" />
   </ItemGroup>
 
 </Project>

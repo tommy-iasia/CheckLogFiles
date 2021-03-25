@@ -4,7 +4,10 @@ using CheckLogUtility.Randomize;
 using CheckLogUtility.Timing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckLogScheduler
@@ -23,11 +26,7 @@ namespace CheckLogScheduler
 
             await logger.InfoAsync("Prepare");
 
-            var configures = await Configure.LoadAsync(args);
-
-            var slots = await configures
-                .SelectAsync(async t => await GetSlotAsync(t, logger))
-                .ToArrayAsync();
+            var slots = await GetSlotsAsync(args, logger);
 
             await logger.InfoAsync("Start");
 
@@ -39,18 +38,68 @@ namespace CheckLogScheduler
             await RunSlotsAsync(slots, singleton, logger);
         }
 
-        private static async Task<Slot> GetSlotAsync(Configure configure, Logger logger)
+        private static async Task<Slot[]> GetSlotsAsync(string[] arguments, Logger logger)
         {
-            await logger.InfoAsync($"Configure {configure.Time} with {string.Join(", ", configure.Arguments)}");
+            var configures = await Configure.LoadAsync(arguments);
 
-            var timeExpression = TimeExpression.Parse(configure.Time);
+            var runner = GetRunner();
 
-            return new Slot
+            return await configures.SelectAsync(async t =>
             {
-                TimeExpression = timeExpression,
-                NextTime = timeExpression.Next(DateTime.Now),
-                Arguments = configure.Arguments
+                await logger.InfoAsync($"Configure {t.Time} with {string.Join(", ", t.Arguments)}");
+
+                var timeExpression = TimeExpression.Parse(t.Time);
+
+                return new Slot
+                {
+                    TimeExpression = timeExpression,
+                    NextTime = timeExpression.Next(DateTime.Now),
+                    Runner = runner,
+                    Arguments = t.Arguments
+                };
+            }).ToArrayAsync();
+        }
+
+        private static Func<string[], CancellationToken, Task> GetRunner()
+        {
+            const string workerName = "CheckLogWorker";
+            var fileNames = new[]
+            {
+                $"{workerName}.exe",
+                $"{workerName}.dll",
+                $"ref\\{workerName}.dll",
+                $"{workerName}\\{workerName}.exe",
+                $"{workerName}\\{workerName}.dll"
             };
+
+            var assemblies = fileNames.Where(File.Exists).Select(t =>
+            {
+                try
+                {
+                    var assembly = Assembly.LoadFrom(t);
+                    return assembly;
+                }
+                catch (Exception e)
+                {
+                    return (object)e;
+                }
+            }).ToArray();
+
+            var methodName = "RunAsync";
+            var method = assemblies.OfType<Assembly>()
+                .Select(t => t.GetType($"{workerName}.{nameof(Program)}"))
+                .Where(t => t != null)
+                .Select(t => t.GetMethod(methodName, new[] { typeof(string[]), typeof(CancellationToken) }))
+                .Where(t => t?.ReturnType == typeof(Task))
+                .FirstOrDefault();
+
+            if (method == null)
+            {
+                throw new InvalidOperationException($"Cannot find {fileNames.First()} or valid {methodName}.");
+            }
+
+            return async (string[] arguments, CancellationToken cancellationToken)
+                => await (Task)method.Invoke(null, new object[] { arguments, cancellationToken });
         }
 
         private static async Task RunSlotsAsync(IEnumerable<Slot> slots, Singleton singleton, Logger logger)
