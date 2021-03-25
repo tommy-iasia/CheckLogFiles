@@ -261,10 +261,6 @@ Check our *Retransmission.txt* and raise error when re-transmission is rejected 
 
 > Suggested to be called at least *every 5 minutes*
 
-# Scheduling
-
-You are adviced to use Window's Task Scheduler to call the CheckLogWorker.exe in your favor.
-
 # Logging
 
 Logs are generated whenever the worker program is called.
@@ -278,3 +274,33 @@ Every logs are submitted to except that *SkipSendInfo* is set true in configure 
 ![server](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/previews/21032203-logs.png?raw=true)
 
 Continue with the [server setting](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/readme.md).
+
+# Scheduling
+
+Calling with first parameter being *Schedule*, the program enters schedule mode.
+
+    CheckLogWorker.exe Schedule CheckLogWorker.Scheduler.json
+
+````
+[
+  {
+    "Time": "**:%1:00",
+	"Arguments": ["HarddiskRemainLowRunner.json"]
+  }
+]
+````
+
+Schedule mode will run different runners at given time pattern using normal file arguments.
+
+## Time Pattern
+
+Time pattern is used to calculate the trigger time daily. It supports both range and interval.
+
+| Example | Pattern | Description |
+|-|-|-|
+| **\*\***:00:00 | Wildcard | hourly |
+| **9-16**:00:00 | Range | from 9am to 4pm |
+| \*\*:**%15**:00 | Interval | every 15 minutes |
+| 9-16:%15:00 | Combine | every 15 minutes from 9am to 4pm |
+
+You are adviced to use Window's Task Scheduler to call the CheckLogWorker.exe in your favor.
