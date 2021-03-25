@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CheckLogScheduler": {
+      "commandName": "Project",
+      "commandLineArgs": "CheckLogScheduler0.json"
+    }
+  }
+}

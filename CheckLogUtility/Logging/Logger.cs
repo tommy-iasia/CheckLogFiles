@@ -12,16 +12,28 @@ namespace CheckLogUtility.Logging
         public IEnumerable<LogLine> Lines => lines;
         private readonly List<LogLine> lines = new();
 
-        public string FileName { get; private set; }
+        public string FilePath { get; private set; }
         public async Task SetFileAsync(string fileName)
         {
-            FileName = fileName;
+            FilePath = Path.Combine("Log", fileName);
+
+            var directory = Path.GetDirectoryName(FilePath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
 
             if (lines.Any())
             {
                 var jsons = lines.Select(t => $"{JsonSerializer.Serialize(t)},\r\n");
                 var text = string.Join(string.Empty, jsons);
-                await File.AppendAllTextAsync(fileName, text);
+
+                await File.AppendAllTextAsync(FilePath, text);
+            }
+            else
+            {
+                var stream = File.Create(FilePath);
+                stream.Close();
             }
         }
 
@@ -35,12 +47,23 @@ namespace CheckLogUtility.Logging
             };
             lines.Add(line);
             
-            Console.WriteLine(line);
+            if (level == LogLevel.Error)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
 
-            if (FileName != null)
+                Console.WriteLine(line);
+
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.WriteLine(line);
+            }
+
+            if (FilePath != null)
             {
                 var json = JsonSerializer.Serialize(line);
-                await File.AppendAllTextAsync(FileName, $"{json},\r\n");
+                await File.AppendAllTextAsync(FilePath, $"{json},\r\n");
             }
         }
 

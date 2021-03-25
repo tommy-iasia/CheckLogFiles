@@ -1,6 +1,9 @@
 ﻿using CheckLogUtility.Linq;
 using CheckLogUtility.Logging;
+using CheckLogUtility.Randomize;
+using CheckLogUtility.Timing;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,61 +15,74 @@ namespace CheckLogScheduler
         {
             var logger = new Logger();
 
+            if (!args.Any())
+            {
+                await logger.ErrorAsync("No configuration is provided");
+                return;
+            }
+
             await logger.InfoAsync("Prepare");
 
             var configures = await Configure.LoadAsync(args);
 
-            if (configures.Length <= 0)
-            {
-                await logger.ErrorAsync("No configure is provided.");
-                return;
-            }
-
-            var slots = await configures.SelectAsync(async t =>
-            {
-                await logger.InfoAsync($"Configure {t.Time} with {string.Join(", ", t.Arguments)}");
-
-                var timeExpression = TimeExpression.Parse(t.Time);
-
-                return new Slot
-                {
-                    TimeExpression = timeExpression,
-                    NextTime = timeExpression.Next(DateTime.Now),
-                    Arguments = t.Arguments
-                };
-            }).ToArrayAsync();
+            var slots = await configures
+                .SelectAsync(async t => await GetSlotAsync(t, logger))
+                .ToArrayAsync();
 
             await logger.InfoAsync("Start");
 
             var singleton = await Singleton.GainAsync();
             await logger.InfoAsync($"Gain singleton with {singleton.Guid}");
 
-            var program = new Program(slots);
+            await logger.SetFileAsync($"{nameof(CheckLogScheduler)}\\{DateTime.Now:yyyyMMddHHmmss}.{RandomUtility.Next(9999)}.log");
 
+            await RunSlotsAsync(slots, singleton, logger);
+        }
+
+        private static async Task<Slot> GetSlotAsync(Configure configure, Logger logger)
+        {
+            await logger.InfoAsync($"Configure {configure.Time} with {string.Join(", ", configure.Arguments)}");
+
+            var timeExpression = TimeExpression.Parse(configure.Time);
+
+            return new Slot
+            {
+                TimeExpression = timeExpression,
+                NextTime = timeExpression.Next(DateTime.Now),
+                Arguments = configure.Arguments
+            };
+        }
+
+        private static async Task RunSlotsAsync(IEnumerable<Slot> slots, Singleton singleton, Logger logger)
+        {
             while (true)
             {
                 var (valid, guid) = await singleton.ValidateAsync();
                 if (!valid)
                 {
                     await logger.InfoAsync($"Overriding by new scheduler {guid}");
+                    break;
                 }
 
-                await program.NextAsync(logger);
+                var slot = slots.OrderBy(t => t.NextTime).First();
+
+                await logger.InfoAsync($"Next worker will be run at {slot.NextTime:yy/MM/dd HH:mm:ss} with {string.Join(", ", slot.Arguments)}");
+
+                var totalSpan = slot.NextTime - DateTime.Now;
+                await logger.InfoAsync($"Wait for {totalSpan.TotalSeconds:#,##0}s");
+
+                await slot.WaitAsync();
+
+                Console.WriteLine();
+
+                await slot.RunAsync(logger);
+
+                Console.WriteLine();
+
+                slot.Next();
+
+                await logger.InfoAsync($"This worker will be run again at {slot.NextTime:yy/MM/dd HH:mm:ss} next time");
             }
-        }
-
-        public Program(Slot[] slots) => this.slots = slots;
-        private readonly Slot[] slots;
-
-        private async Task NextAsync(Logger logger)
-        {
-            var slot = slots.OrderBy(t => t.NextTime).First();
-            await slot.WaitAsync();
-
-            await slot.RunAsync(logger);
-
-            slot.Next();
-            await logger.InfoAsync($"Worker will be run at {slot.NextTime:yy/MM/dd HH:mm:ss} next time");
         }
     }
 }

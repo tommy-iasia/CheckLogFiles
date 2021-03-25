@@ -1,4 +1,5 @@
 ﻿using CheckLogUtility.Logging;
+using CheckLogUtility.Timing;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,19 +17,19 @@ namespace CheckLogScheduler
             while (true)
             {
                 var now = DateTime.Now;
-                if (NextTime >= now)
+                if (now >= NextTime)
                 {
                     return;
                 }
 
-                var timeSpan = NextTime - now;
-                if (timeSpan.TotalSeconds > 5)
+                var thisSpan = NextTime - now;
+                if (thisSpan.TotalSeconds > 5)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(5));
                 }
                 else
                 {
-                    await Task.Delay(timeSpan);
+                    await Task.Delay(thisSpan);
                 }
             }
         }

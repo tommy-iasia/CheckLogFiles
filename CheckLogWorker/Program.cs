@@ -1,4 +1,6 @@
-﻿using CheckLogUtility.Logging;
+﻿using CheckLogUtility.Json;
+using CheckLogUtility.Linq;
+using CheckLogUtility.Logging;
 using CheckLogUtility.Randomize;
 using CheckLogWorker.Runners;
 using System;
@@ -33,7 +35,8 @@ namespace CheckLogWorker
                 return;
             }
 
-            var json = await GetConfigureJsonAsync(args);
+            var jsons = await args.SelectAsync(async t => await File.ReadAllTextAsync(t)).ToArrayAsync();
+            var json = JsonSerializerUtility.Combine(jsons);
 
             var program = JsonSerializer.Deserialize<Program>(json);
             if (string.IsNullOrWhiteSpace(program.Runner))
@@ -58,7 +61,7 @@ namespace CheckLogWorker
             
             await logger.InfoAsync($"Id: {logName}");
 
-            await logger.SetFileAsync($"{logName}.log");
+            await logger.SetFileAsync($"{nameof(CheckLogWorker)}\\{logName}.log");
 
             await logger.InfoAsync($"Configure: {json}");
 
@@ -115,29 +118,11 @@ namespace CheckLogWorker
             await logger.InfoAsync("End");
         }
 
-        private static async Task<string> GetConfigureJsonAsync(string[] filePaths)
-        {
-            var outputDictionary = new Dictionary<string, object>();
-
-            foreach (var filePath in filePaths)
-            {
-                var json = await File.ReadAllTextAsync(filePath);
-                var jsonDictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-
-                foreach (var (key, value) in jsonDictionary)
-                {
-                    outputDictionary[key] = value;
-                }
-            }
-
-            return JsonSerializer.Serialize(outputDictionary);
-        }
-
         private static async Task SendAsync(LogName name, string server, Logger logger, CancellationToken cancellationToken)
         {
             var uri = $"{server.TrimEnd('/')}/Log/Create";
 
-            var text = await File.ReadAllTextAsync(logger.FileName);
+            var text = await File.ReadAllTextAsync(logger.FilePath, cancellationToken);
 
             var submit = new LogSubmit
             {

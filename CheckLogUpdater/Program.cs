@@ -16,7 +16,7 @@ namespace CheckLogUpdater
 
             try
             {
-                await logger.SetFileAsync($"{nameof(CheckLogUpdater)}.{DateTime.Now:yyMMddHHmmss}.{RandomUtility.Next(9999)}.log");
+                await logger.SetFileAsync($"{nameof(CheckLogUpdater)}\\{DateTime.Now:yyMMddHHmmss}.{RandomUtility.Next(9999)}.log");
 
                 await RunAsync(args, logger);
             }
