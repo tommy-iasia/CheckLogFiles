@@ -21,6 +21,10 @@ CheckLogScheduler.json
 ]
 ````
 
+## Dependency
+
+CheckLogScheduler.exe requires **CheckLogWorker.exe** in the same directory.
+
 ## Configuration
 
 This time, the configuration file is simple. Only time and arguments are needed.
