@@ -2,13 +2,13 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace CheckLogScheduler
+namespace CheckLogWorker.Schedule
 {
     public class Singleton
     {
         public readonly Guid Guid = Guid.NewGuid();
 
-        private const string fileName = nameof(CheckLogScheduler) + "." + nameof(Singleton) + ".guid";
+        private const string fileName = nameof(CheckLogWorker) + "." + nameof(Schedule) + "." + nameof(Singleton) + ".guid";
 
         public static async Task<Singleton> GainAsync()
         {

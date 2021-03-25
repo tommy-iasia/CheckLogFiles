@@ -12,9 +12,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckLogServer", "CheckLogS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckLogUpdater", "CheckLogUpdater\CheckLogUpdater.csproj", "{0994C715-E76E-4837-8A0B-914E9A2D9337}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckLogUtility", "CheckLogUtility\CheckLogUtility.csproj", "{42159E34-66B7-4C13-AB32-35890F023476}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckLogScheduler", "CheckLogScheduler\CheckLogScheduler.csproj", "{8AE5250E-DED0-433A-AB27-DBCC43E7906F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckLogUtility", "CheckLogUtility\CheckLogUtility.csproj", "{42159E34-66B7-4C13-AB32-35890F023476}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,10 +36,6 @@ Global
 		{42159E34-66B7-4C13-AB32-35890F023476}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42159E34-66B7-4C13-AB32-35890F023476}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42159E34-66B7-4C13-AB32-35890F023476}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8AE5250E-DED0-433A-AB27-DBCC43E7906F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AE5250E-DED0-433A-AB27-DBCC43E7906F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AE5250E-DED0-433A-AB27-DBCC43E7906F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AE5250E-DED0-433A-AB27-DBCC43E7906F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

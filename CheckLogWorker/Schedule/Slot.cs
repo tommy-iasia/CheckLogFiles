@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CheckLogScheduler
+namespace CheckLogWorker.Schedule
 {
     public class Slot
     {
@@ -34,7 +34,6 @@ namespace CheckLogScheduler
             }
         }
 
-        public Func<string[], CancellationToken, Task> Runner;
         public string[] Arguments { get; set; }
         public async Task RunAsync(Logger logger)
         {
@@ -46,8 +45,7 @@ namespace CheckLogScheduler
 
             try
             {
-                await Runner(Arguments, cancellationSource.Token);
-                //await CheckLogWorker.Program.RunAsync(Arguments, cancellationSource.Token);
+                await Executor.RunAsync(Arguments, cancellationSource.Token);
             }
             catch (Exception e)
             {
