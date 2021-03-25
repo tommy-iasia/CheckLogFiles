@@ -7,7 +7,6 @@ Executables can be downloaded in [publish folder](https://github.com/tommy-iasia
 This project consists of four components
 - [Worker](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogWorker/readme.md)
 - [Server](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/readme.md)
-- [Scheduler](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogScheduler/readme.md)
 - [Updater](#updater)
 
 # Worker
@@ -23,12 +22,6 @@ Server consists a map of all clients. When a client submits its checking, server
 When needed, it fires notifications.
 
 [continue reading](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogServer/readme.md)
-
-# Scheduler
-
-Run different workers according to time patterns provided.
-
-[continue reading](https://github.com/tommy-iasia/CheckLogFiles/blob/master/CheckLogScheduler/readme.md)
 
 # Updater
 
