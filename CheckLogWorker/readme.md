@@ -304,3 +304,10 @@ Time pattern is used to calculate the trigger time daily. It supports both range
 | 9-16:%15:00 | Combine | every 15 minutes from 9am to 4pm |
 
 You are adviced to use Window's Task Scheduler to call the CheckLogWorker.exe in your favor.
+
+## Windows TaskScheduler
+
+You are advise to set a daily task in TaskScheduler daily calling the worker in schedule mode.
+
+Be noted that new schedule mode worker will replace the old one automatically.  
+There is no need to worry about duplication.
