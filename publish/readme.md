@@ -18,4 +18,8 @@ Just run the *Start.cmd*.
 
 ## Client
 
-Import the *.xml* files into Window's *TaskScheduler*.
+1. Copy configurations from *[Templates](https://github.com/tommy-iasia/CheckLogFiles/tree/master/CheckLogWorker#runners)* folder
+2. Replace the above mentioned values
+3. Setup *[Schedule.json](https://github.com/tommy-iasia/CheckLogFiles/tree/master/CheckLogWorker#scheduling)*
+4. Run *CheckLogWorker.cmd* to comfirm configurations
+5. Add task into *[Windows TaskScheduler](https://github.com/tommy-iasia/CheckLogFiles/tree/master/CheckLogWorker#windows-taskscheduler)*
