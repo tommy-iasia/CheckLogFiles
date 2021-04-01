@@ -2,7 +2,7 @@
   "profiles": {
     "CheckLogWorker": {
       "commandName": "Project",
-      "commandLineArgs": "Schedule CheckLogWorker.Scheduler.json"
+      "commandLineArgs": "NetWarnOverflowRunner.json"
     }
   }
 }

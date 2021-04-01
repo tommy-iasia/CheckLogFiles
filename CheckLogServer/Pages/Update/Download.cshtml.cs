@@ -34,7 +34,7 @@ namespace CheckLogServer.Pages.Update
                     return NotFound();
                 }
 
-                var stream = System.IO.File.OpenRead(filePath);
+                var stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 return File(stream, "application/octet-stream");
             }
             else

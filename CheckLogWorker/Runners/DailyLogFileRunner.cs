@@ -63,7 +63,7 @@ namespace CheckLogWorker.Runners
                 };
             }
 
-            using var fileStream = File.OpenRead(filePath);
+            using var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             fileStream.Position = fromPosition.Position;
 
             var lines = ReadLinesAsync(fileStream);

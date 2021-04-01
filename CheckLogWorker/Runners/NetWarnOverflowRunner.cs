@@ -31,12 +31,14 @@ namespace CheckLogWorker.Runners
         protected override Regex LineRegex => new(@"\[(?<time>[\d/ :.]+)\] \[NetClient\] \[appendWriteBuffer \| Write Buffer Overflow \| buffLen: \d+ \| writeBuff: java\.nio\.HeapByteBuffer\[pos=\d+ lim=\d+ cap=\d+\] \| (?<client>[\d.:]+)\]");
         protected override async Task RunAsync(IEnumerable<NetOverflowRecord> overflows, string filePath, Logger logger, CancellationToken cancellationToken)
         {
-            var serverPorts = await GetServerPortsAsync(filePath, cancellationToken);
+            var serverPorts = await GetServerPortsAsync(filePath);
 
             var ignoreTime = UnitText.ParseSpan(IgnoreSpan);
 
             foreach (var overflow in overflows)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var content = $"{overflow.Count}c from {overflow.Start:HH:mm:ss} to {overflow.End:HH:mm:ss}";
 
                 if (overflow.Count > IgnoreCount
@@ -67,14 +69,15 @@ namespace CheckLogWorker.Runners
 
         private const string WarnLogName = "NetWarnLog.txt";
         private const string InfoLogName = "NetInfoLog.txt";
-        private static async Task<Dictionary<string, int>> GetServerPortsAsync(string warnPath, CancellationToken cancellationToken)
+        private static async Task<Dictionary<string, int>> GetServerPortsAsync(string warnPath)
         {
             var filePath = warnPath.Replace(WarnLogName, InfoLogName);
-            var lines = await File.ReadAllLinesAsync(filePath, cancellationToken);
 
-            var regex = new Regex(@"\[validate \| server : [\d.]+:(?<port>\d+) \| client : (?<client>[\d.:]+) \|");
-            return lines.Select(t => regex.Match(t))
-                .Where(t => t.Success)
+            using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var reader = new StreamReader(stream);
+            var text = await reader.ReadToEndAsync();
+
+            return Regex.Matches(text, @"\[validate \| server : [\d.]+:(?<port>\d+) \| client : (?<client>[\d.:]+) \|")
                 .Select(t => (port: int.TryParse(t.Groups["port"].Value, out var port) ? port : 0, client: t.Groups["client"].Value))
                 .Where(t => t.port > 0)
                 .ToLookup(t => t.client, t => t.port)
