@@ -1,4 +1,5 @@
-﻿using CheckLogUtility.Logging;
+﻿using CheckLogUtility.Linq;
+using CheckLogUtility.Logging;
 using CheckLogUtility.Text;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace CheckLogWorker.Runners
         protected override Regex LineRegex => new(@"\[(?<time>[\d/ :.]+)\] \[NetClient\] \[appendWriteBuffer \| Write Buffer Overflow \| buffLen: \d+ \| writeBuff: java\.nio\.HeapByteBuffer\[pos=\d+ lim=\d+ cap=\d+\] \| (?<client>[\d.:]+)\]");
         protected override async Task RunAsync(IEnumerable<NetOverflowRecord> overflows, string filePath, Logger logger, CancellationToken cancellationToken)
         {
-            var serverPorts = await GetServerPortsAsync(filePath);
+            var serverPorts = await GetServerPortsAsync(filePath, logger);
 
             var ignoreTime = UnitText.ParseSpan(IgnoreSpan);
 
@@ -69,18 +70,21 @@ namespace CheckLogWorker.Runners
 
         private const string WarnLogName = "NetWarnLog.txt";
         private const string InfoLogName = "NetInfoLog.txt";
-        private static async Task<Dictionary<string, int>> GetServerPortsAsync(string warnPath)
+        private static async Task<Dictionary<string, int>> GetServerPortsAsync(string warnPath, Logger logger)
         {
             var filePath = warnPath.Replace(WarnLogName, InfoLogName);
 
             using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            using var reader = new StreamReader(stream);
-            var text = await reader.ReadToEndAsync();
+            var lines = ReadLinesAsync(stream, capacity: 100_000, logger);
 
-            return Regex.Matches(text, @"\[validate \| server : [\d.]+:(?<port>\d+) \| client : (?<client>[\d.:]+) \|")
-                .Select(t => (port: int.TryParse(t.Groups["port"].Value, out var port) ? port : 0, client: t.Groups["client"].Value))
-                .Where(t => t.port > 0)
-                .ToLookup(t => t.client, t => t.port)
+            var regex = new Regex(@"\[validate \| server : [\d.]+:(?<port>\d+) \| client : (?<client>[\d.:]+) \|");
+
+            var portClients = await lines.SelectAsync(t => regex.Match(t))
+                .SelectAsync(t => (port: int.TryParse(t.Groups["port"].Value, out var port) ? port : 0, client: t.Groups["client"].Value))
+                .WhereAsync(t => t.port > 0)
+                .ToListAsync();
+
+            return portClients.ToLookup(t => t.client, t => t.port)
                 .ToDictionary(t => t.Key, t => t.Last());
         }
 

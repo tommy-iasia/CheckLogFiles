@@ -23,20 +23,20 @@ namespace CheckLogWorker.Runners
                 return;
             }
 
-            var lines = NextLinesAsync(filePath);
+            var lines = NextLinesAsync(filePath, logger);
 
             await RunAsync(filePath, lines, logger, cancellationToken);
         }
         protected abstract Task RunAsync(string filePath, IAsyncEnumerable<string> lines, Logger logger, CancellationToken cancellationToken);
 
-        protected IAsyncEnumerable<string> NextLinesAsync(string filePath)
+        protected IAsyncEnumerable<string> NextLinesAsync(string filePath, Logger logger)
         {
             var hash = GetFileHash();
 
-            return NextLinesAsync(filePath, hash);
+            return NextLinesAsync(filePath, hash, logger);
         }
         protected virtual string GetFileHash() => $"{FilePattern}, {DateTime.Today:yyMMdd}, {Identifier}, {Runner}";
-        private static async IAsyncEnumerable<string> NextLinesAsync(string filePath, string hash)
+        private static async IAsyncEnumerable<string> NextLinesAsync(string filePath, string hash, Logger logger)
         {
             const string positionsFile = nameof(DailyLogFileRunner) + ".Positions.json";
             
@@ -64,9 +64,25 @@ namespace CheckLogWorker.Runners
             }
 
             using var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            fileStream.Position = fromPosition.Position;
 
-            var lines = ReadLinesAsync(fileStream);
+            var positionLength = fileStream.Length - fromPosition.Position;
+            const long maxLength = 50 * 1024 * 1024;
+            if (positionLength <= maxLength)
+            {
+                var startPosition = Math.Min(Math.Max(fromPosition.Position, 0), fileStream.Length - 1);
+                await logger.InfoAsync($"Start at {startPosition:#,##0}B within file of {fileStream.Length:#,##0}B");
+
+                fileStream.Position = startPosition;
+            }
+            else
+            {
+                var lengthPosition = fileStream.Length - maxLength;
+                await logger.InfoAsync($"Start at {lengthPosition:#,##0}B instead of {fromPosition.Position:#,##0}B as file of {fileStream.Length:#,##0}B is too large");
+
+                fileStream.Position = fileStream.Length - maxLength;
+            }
+
+            var lines = ReadLinesAsync(fileStream, capacity: 1_000_000, logger);
             await foreach (var line in lines)
             {
                 yield return line;
@@ -85,11 +101,12 @@ namespace CheckLogWorker.Runners
 
             await File.WriteAllTextAsync(positionsFile, toPositionsJson);
         }
-        private static async IAsyncEnumerable<string> ReadLinesAsync(Stream stream)
+        protected static async IAsyncEnumerable<string> ReadLinesAsync(Stream stream, int capacity, Logger logger)
         {
             var reader = new StreamReader(stream, Encoding.UTF8);
 
-            while (true)
+            var index = 0;
+            while (index++ < capacity)
             {
                 var startPosition = stream.Position;
 
@@ -120,6 +137,11 @@ namespace CheckLogWorker.Runners
                         yield return line;
                     }
                 }
+            }
+
+            if (index >= capacity)
+            {
+                await logger.InfoAsync($"Read {index - 1:#,##0} lines only as file is too large");
             }
         }
     }
