@@ -6,7 +6,7 @@ namespace CheckLogUpdater
 {
     public class Configure
     {
-        public string Address { get; set; }
+        public string Server { get; set; }
 
         public string Identifier { get; set; }
         public string Version { get; set; }

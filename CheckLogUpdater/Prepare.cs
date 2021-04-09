@@ -17,7 +17,7 @@ namespace CheckLogUpdater
             var configure = await Configure.LoadAsync();
 
             using var client = new HttpClient();
-            var updates = await client.GetFromJsonAsync<Update[]>($"{configure.Address}/Update/After?identifier={configure.Identifier}&version={configure.Version}");
+            var updates = await client.GetFromJsonAsync<Update[]>($"{configure.Server}/Update/After?identifier={configure.Identifier}&version={configure.Version}");
 
             if (!updates.Any())
             {
@@ -28,7 +28,7 @@ namespace CheckLogUpdater
             var update = updates.OrderBy(t => t.Version).First();
             await logger.InfoAsync($"Update {update.Version} of {update.Id} will be applied...");
 
-            await DownloadAsync(configure.Address, update, logger);
+            await DownloadAsync(configure.Server, update, logger);
 
             await RunProcessAsync(update, logger);
         }
