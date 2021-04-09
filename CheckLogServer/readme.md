@@ -64,5 +64,9 @@ You may use any [SQLite editor](https://sqlitebrowser.org/) to modify data in *D
 
 # Telegram
 
-Server can send message through telegram if needed. Add a row in *Telegrams* table.  
+Server can send message through telegram if needed. Add one row in *Telegrams* table.  
 Bot token is like 198169095:ezeY6DjZq2Hn8QsYQUuL79tTeydqCsAAGAO. Channel id, like -1066537600175.
+
+# Email
+
+Server can also send notification message through SMTP. Add one row in *Emails* table.
