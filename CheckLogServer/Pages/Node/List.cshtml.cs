@@ -15,7 +15,7 @@ namespace CheckLogServer.Pages.Node
         public List<Models.Node> Nodes;
         public async Task OnGetAsync()
             => Nodes = await database.Nodes
-            .OrderBy(t => t.Identitifer)
+            .OrderBy(t => t.Identifier)
             .Include(t => t.LevelLog)
             .ToListAsync();
     }

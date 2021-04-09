@@ -3,7 +3,7 @@
 });
 
 function applyNode(node) {
-    var path = loadPath(node.identitifer);
+    var path = loadPath(node.identifier);
 
     var last = path[path.length - 1];
     var title = last.children('.title');
@@ -21,8 +21,8 @@ function applyNode(node) {
         checkLevel(node);
     }
 }
-function loadPath(identitifer) {
-    var parts = identitifer.split('.');
+function loadPath(identifier) {
+    var parts = identifier.split('.');
 
     var parent = $('.map');
     var path = [parent];

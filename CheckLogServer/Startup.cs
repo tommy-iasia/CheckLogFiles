@@ -27,6 +27,7 @@ namespace CheckLogServer
             services.AddScoped<Login>();
 
             services.AddTransient<TelegramService>();
+            services.AddTransient<EmailService>();
 
             services.AddRazorPages().AddRazorRuntimeCompilation();
 

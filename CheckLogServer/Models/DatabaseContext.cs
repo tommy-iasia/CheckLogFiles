@@ -11,11 +11,11 @@ namespace CheckLogServer.Models
         public DbSet<AccountSession> AccountSessions { get; set; }
 
         public DbSet<LogRow> LogRows { get; set; }
-
         public DbSet<Node> Nodes { get; set; }
 
         public DbSet<Update> Updates { get; set; }
 
+        public DbSet<Email> Emails { get; set; }
         public DbSet<Telegram> Telegrams { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

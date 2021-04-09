@@ -17,15 +17,17 @@ namespace CheckLogServer.Pages.Log
     [IgnoreAntiforgeryToken]
     public class CreateModel : PageModel
     {
-        public CreateModel(DatabaseContext database, IHubContext<NodeHub> nodeHub, TelegramService telegramService)
+        public CreateModel(DatabaseContext database, IHubContext<NodeHub> nodeHub, TelegramService telegramService, EmailService emailService)
         {
             this.database = database;
             this.nodeHub = nodeHub;
             this.telegramService = telegramService;
+            this.emailService = emailService;
         }
         private readonly DatabaseContext database;
         private readonly IHubContext<NodeHub> nodeHub;
         private readonly TelegramService telegramService;
+        private readonly EmailService emailService;
 
         [FromBody]
         public LogSubmit Submit { get; set; }
@@ -66,7 +68,7 @@ namespace CheckLogServer.Pages.Log
             database.LogRows.Add(row);
 
             var node = await database.Nodes
-                .Where(t => t.Identitifer == Submit.Name.Identifier)
+                .Where(t => t.Identifier == Submit.Name.Identifier)
                 .Include(t => t.LevelLog)
                 .FirstOrDefaultAsync();
 
@@ -81,7 +83,7 @@ namespace CheckLogServer.Pages.Log
             {
                 node = new Models.Node
                 {
-                    Identitifer = Submit.Name.Identifier,
+                    Identifier = Submit.Name.Identifier,
                     Disabled = false
                 };
                 database.Nodes.Add(node);
@@ -104,7 +106,11 @@ namespace CheckLogServer.Pages.Log
             if (newLevel > LogLevel.Info
                 && newLevel > oldLevel)
             {
-                _ = telegramService.SendMessageAsync($"*{newLevel}* `{node.Identitifer}`");
+                _ = telegramService.SendMessageAsync($"*{newLevel}* `{node.Identifier}`");
+
+                _ = emailService.SendMessageAsync(
+                    $"{node.Identifier} has reached {newLevel} level",
+                    t => $"<a href=\"{t.ServerAddress}/Node/Details?id={node.Id}\">Click Here</a>");
             }
 
             return Content($"{row.Name} created");

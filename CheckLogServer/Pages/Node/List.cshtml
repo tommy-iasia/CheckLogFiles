@@ -11,7 +11,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Nodes[0].Identitifer)
+                @Html.DisplayNameFor(model => model.Nodes[0].Identifier)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Nodes[0].LevelLog.Level)
@@ -30,13 +30,13 @@
         @{
             var ordered = Model.Nodes
                 .OrderByDescending(t => t.LevelLog?.Level ?? CheckLogUtility.Logging.LogLevel.Unknown)
-                .ThenBy(t => t.Identitifer);
+                .ThenBy(t => t.Identifier);
         }
         @foreach (var row in ordered)
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(_ => row.Identitifer)
+                    @Html.DisplayFor(_ => row.Identifier)
                 </td>
                 <td>
                     @(row.LevelLog?.Level.ToString() ?? "Normal")

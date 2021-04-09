@@ -38,11 +38,24 @@
         </tr>
 
         <tr>
-            <td>Telegram Bot</td>
+            <td>Telegram</td>
             @{ var bots = await database.Telegrams.Select(t => t.BotToken).ToListAsync(); }
             @if (bots.Any())
             {
                 <td>@string.Join(", ", bots)</td>
+            }
+            else
+            {
+                <td>(none)</td>
+            }
+        </tr>
+
+        <tr>
+            <td>Email</td>
+            @{ var emails = await database.Emails.Select(t => t.To).ToListAsync(); }
+            @if (emails.Any())
+            {
+                <td>@string.Join(", ", emails)</td>
             }
             else
             {

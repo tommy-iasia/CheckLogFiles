@@ -3,11 +3,11 @@ using System;
 
 namespace CheckLogServer.Models
 {
-    [Index(nameof(Identitifer), IsUnique = true)]
+    [Index(nameof(Identifier), IsUnique = true)]
     public class Node
     {
         public int Id { get; set; }
-        public string Identitifer { get; set; }
+        public string Identifier { get; set; }
 
         public DateTime LogTime { get; set; }
 
