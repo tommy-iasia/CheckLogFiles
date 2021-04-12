@@ -4,7 +4,10 @@
 @{
     ViewData["Title"] = "Nodes";
 }
-<h1>Nodes</h1>
+<h1>
+    Nodes
+    <img src="~/images/focus.png" />
+</h1>
 <a asp-page="./Map">Map View</a>
 
 <table class="table">
@@ -42,10 +45,10 @@
                     @(row.LevelLog?.Level.ToString() ?? "Normal")
                 </td>
                 <td>
-                    @Html.DisplayFor(_ => row.LevelTime)
+                    @(row.LevelTime != default ? row.LevelTime.ToString("yyyy/MM/dd HH:mm:ss") : "(none)")
                 </td>
                 <td>
-                    @Html.DisplayFor(_ => row.LogTime)
+                    @(row.LogTime != default ? row.LogTime.ToString("yyyy/MM/dd HH:mm:ss") : "(none)")
                 </td>
                 <td>
                     @if (row.Disabled)

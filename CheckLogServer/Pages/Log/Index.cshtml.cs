@@ -21,7 +21,11 @@ namespace CheckLogServer.Pages.Log
             var count = await database.LogRows.CountAsync();
 
             const int pageSize = 100;
-            Rows = await database.LogRows.Skip(pageIndex * pageSize).Take(pageSize).ToListAsync();
+            Rows = await database.LogRows
+                .OrderByDescending(t => t.Time)
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             var totalPage = (int)Math.Ceiling((double)count / pageSize);
             Pagination = (pageIndex, totalPage);

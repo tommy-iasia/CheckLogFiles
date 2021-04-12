@@ -6,7 +6,10 @@
     ViewData["Title"] = "Node";
 }
 
-<h1>@Model.Node.Identifier</h1>
+<h1>
+    @Model.Node.Identifier
+    <img src="~/images/focus.png" />
+</h1>
 
 <table class="table">
     <tbody>
@@ -40,7 +43,7 @@
 
         <tr>
             <td>@nameof(Model.Node.LevelTime)</td>
-            <td>@Model.Node.LevelTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+            <td>@(Model.Node.LevelTime != default ? Model.Node.LevelTime.ToString("yyyy-MM-dd HH:mm:ss") : "(none")</td>
         </tr>
 
         @if (Model.Node.Disabled)
@@ -63,7 +66,7 @@
 
         <tr>
             <td>@nameof(Model.Node.LogTime)</td>
-            <td>@Model.Node.LogTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+            <td>@(Model.Node.LogTime != default ? Model.Node.LogTime.ToString("yyyy-MM-dd HH:mm:ss") : "(none)")</td>
         </tr>
     </tbody>
 </table>
