@@ -53,7 +53,12 @@ namespace CheckLogServer.Middlewares
 
             database.AccountSessions.Add(accountSession);
 
-            response.Cookies.Append(SessionKey, code);
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                MaxAge = TimeSpan.FromDays(365)
+            };
+            response.Cookies.Append(SessionKey, code, cookieOptions);
 
             return accountSession;
         }
